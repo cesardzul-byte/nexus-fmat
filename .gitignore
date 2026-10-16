@@ -1,0 +1,8 @@
+# Credenciales de la BD (se sube config.example.php en su lugar)
+app/config/config.php
+
+# Basura del sistema operativo y del editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
