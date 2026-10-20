@@ -1,0 +1,2 @@
+# app/ no se sirve al navegador: config, includes, modelos y vistas solo se incluyen desde PHP
+Require all denied
