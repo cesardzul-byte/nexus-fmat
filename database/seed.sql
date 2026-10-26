@@ -37,3 +37,12 @@ INSERT INTO asesor_materia (asesor_id, materia_id) VALUES
   (4, 5),
   (4, 1),
   (4, 6);
+
+INSERT INTO disponibilidad (asesor_id,materia_id,dia_semana, hora_inicio, hora_fin,lugar) VALUES
+  (2, 1, 1, '09:00:00', '11:00:00', 'Aula 101'),
+  (2, 2, 3, '14:00:00', '16:00:00', 'Aula 102'),
+  (3, 3, 2, '10:00:00', '12:00:00', 'Aula 201'),
+  (3, 4, 4, '15:00:00', '17:00:00', 'Aula 202'),
+  (4, 5, 5, '08:00:00', '10:00:00', 'Aula 301'),
+  (4, 1, 1, '13:00:00', '15:00:00', 'Aula 302'),
+  (4, 6, 3, '11:00:00', '13:00:00', 'Aula 303');
