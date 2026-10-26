@@ -25,4 +25,23 @@ class Materia
 
         return $stmt->fetchAll();
     }
-} 
+
+    /**
+     * Busca una materia por su id, esté activa o no.
+     * 
+     * @param int $id Id de la materia.
+     * @return array<string, mixed>|null Materia con su id, clave,activa y nombre o null si no existe.
+     */
+    public static function buscarPorId(int $id): ?array
+    {
+        $stmt = db()->prepare(
+            'SELECT id, clave, nombre,activa
+       FROM materias
+       WHERE id=?'
+        );
+
+        $stmt->execute([$id]);
+
+        return $stmt->fetch() ?: null;
+    }
+}
