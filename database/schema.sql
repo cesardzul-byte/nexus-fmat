@@ -42,3 +42,76 @@ CREATE TABLE usuarios (
   CONSTRAINT chk_usuarios_licenciatura CHECK (rol = 'admin' OR licenciatura_id IS NOT NULL),
   CONSTRAINT chk_usuarios_semestre_rol CHECK (rol = 'admin' OR semestre IS NOT NULL)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE asesor_materia (
+  asesor_id INT UNSIGNED NOT NULL,
+  materia_id INT UNSIGNED NOT NULL,
+  PRIMARY KEY (asesor_id, materia_id),
+  CONSTRAINT fk_asesor_materia_asesor
+   FOREIGN KEY (asesor_id)
+   REFERENCES usuarios (id)
+   ON DELETE RESTRICT,
+  CONSTRAINT fk_asesor_materia_materia
+   FOREIGN KEY (materia_id)
+   REFERENCES materias (id)
+   ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE disponibilidad (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  asesor_id INT UNSIGNED NOT NULL,
+  materia_id INT UNSIGNED NOT NULL,
+  dia_semana TINYINT UNSIGNED NOT NULL,
+  hora_inicio TIME NOT NULL,
+  hora_fin TIME NOT NULL,
+  lugar VARCHAR(100) NOT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_disponibilidad_asesor_materia
+   FOREIGN KEY (asesor_id, materia_id)
+   REFERENCES asesor_materia (asesor_id, materia_id)
+   ON DELETE CASCADE,
+  CONSTRAINT chk_disponibilidad_hora CHECK (hora_inicio < hora_fin),
+  CONSTRAINT chk_disponibilidad_dia CHECK (dia_semana BETWEEN 1 AND 6)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE sesiones (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  alumno_id INT UNSIGNED NOT NULL,
+  asesor_id INT UNSIGNED NOT NULL,
+  materia_id INT UNSIGNED NOT NULL,
+  fecha DATE NOT NULL,
+  hora_inicio TIME NOT NULL,
+  hora_fin TIME NOT NULL,
+  tema VARCHAR(150) NOT NULL,
+  estado ENUM('pendiente', 'confirmada', 'completada', 'cancelada') NOT NULL DEFAULT 'pendiente',
+  creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_sesiones_alumno
+   FOREIGN KEY (alumno_id)
+   REFERENCES usuarios (id)
+   ON DELETE RESTRICT,
+  CONSTRAINT fk_sesiones_asesor
+   FOREIGN KEY (asesor_id)
+   REFERENCES usuarios (id)
+   ON DELETE RESTRICT,
+  CONSTRAINT fk_sesiones_materia
+   FOREIGN KEY (materia_id)
+   REFERENCES materias (id)
+   ON DELETE RESTRICT,
+  CONSTRAINT chk_sesiones_hora CHECK (hora_inicio < hora_fin)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE resenas (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  sesion_id INT UNSIGNED NOT NULL,
+  calificacion TINYINT UNSIGNED NOT NULL,
+  comentario TEXT DEFAULT NULL,
+  creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_resenas_sesion (sesion_id),
+  CONSTRAINT fk_resenas_sesion
+   FOREIGN KEY (sesion_id)
+   REFERENCES sesiones (id)
+   ON DELETE RESTRICT,
+  CONSTRAINT chk_resenas_calificacion CHECK (calificacion BETWEEN 1 AND 5)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
