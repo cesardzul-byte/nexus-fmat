@@ -44,4 +44,23 @@ class Materia
 
         return $stmt->fetch() ?: null;
     }
+
+    /**
+     * Devuelve la lista de materias ACTIVAS con la cantidad de asesores que tienen asignados, ordenadas por nombre.
+     * 
+     * @return array<int, array<string, mixed>> Materias con su id, clave, nombre y cantidad de asesores.
+     */
+    public static function conNumeroAsesores(): array
+    {
+        $stmt = db()->query(
+            'SELECT m.id, m.clave, m.nombre, COUNT(am.asesor_id) AS cantidad_asesores
+       FROM materias m
+       LEFT JOIN asesor_materia am ON am.materia_id = m.id
+       WHERE m.activa=1
+       GROUP BY m.id
+       ORDER BY m.nombre'
+        );
+
+        return $stmt->fetchAll();
+    }
 }
