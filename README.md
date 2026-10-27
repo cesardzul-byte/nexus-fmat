@@ -57,3 +57,21 @@ Ramas, commits, pull requests, revisión cruzada y estándares de código: [docs
 ## Licencia
 
 Ver [LICENSE](LICENSE).
+
+<!-- ===== ISS-05 · Cuentas demo (P1) ===== -->
+
+## Cuentas demo
+
+Al importar `database/seed.sql` se crean estas 7 cuentas. Todas usan la contraseña **`Demo1234`**.
+
+| Rol | Nombre | Correo |
+|---|---|---|
+| Administrador | Ana Martínez | `ana.martinez@demo.uady.mx` |
+| Asesor | Luis Hernández | `luis.hernandez@demo.uady.mx` |
+| Asesor | Laura Ramírez | `laura.ramirez@demo.uady.mx` |
+| Asesor | Pedro Sánchez | `pedro.sanchez@demo.uady.mx` |
+| Alumno | Juan Pérez | `juan.perez@demo.uady.mx` |
+| Alumno | María González | `maria.gonzalez@demo.uady.mx` |
+| Alumno | Carlos Rodríguez | `carlos.rodriguez@demo.uady.mx` |
+
+> Son datos ficticios solo para desarrollo y demostración.
