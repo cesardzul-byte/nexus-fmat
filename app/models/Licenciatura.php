@@ -15,11 +15,10 @@ class Licenciatura
      */
     public static function todas(): array
     {
-
         $stmt = db()->query(
             'SELECT id, nombre
-       FROM licenciaturas
-     ORDER BY nombre'
+               FROM licenciaturas
+              ORDER BY nombre'
         );
 
         return $stmt->fetchAll();

@@ -1,5 +1,5 @@
 DROP DATABASE IF EXISTS nexus_fmat;
-CREATE DATABASE nexus_fmat CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE nexus_fmat CHARACTER SET utf8mb4;
 USE nexus_fmat;
 
 CREATE TABLE licenciaturas (

@@ -4,7 +4,7 @@ INSERT INTO licenciaturas (nombre) VALUES
   ('Actuaría'),
   ('Ciencias de la Computación'),
   ('Enseñanza de las Matemáticas'),
-  ('Ingeniería en Software'),
+  ('Ingeniería de Software'),
   ('Ingeniería en Computación'),
   ('Matemáticas');
 
