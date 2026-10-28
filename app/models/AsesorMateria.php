@@ -65,7 +65,7 @@ class AsesorMateria
     }
 
     /**
-     * Quita una marteria a un asesor. Sus bloques de disponibilidad se borran solos 
+     * Quita una materia a un asesor. Sus bloques de disponibilidad se borran solos 
      * por el ON DELETE CASCADE
      * 
      * @param int $asesorId Id del asesor.
