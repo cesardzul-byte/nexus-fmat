@@ -44,4 +44,41 @@ class AsesorMateria
         $stmt->execute([$asesorId, $materiaId]);
         return (bool) $stmt->fetchColumn();
     }
+
+    /**
+     * Asigna una materia a un asesor.
+     * 
+     * Quien la llama debe validar antes que la materia exista, esté activa y que el
+     * asesor no la tenga ya (con imparte()).
+     * 
+     * @param int $asesorId Id del asesor.
+     * @param int $materiaId Id de la materia.
+     * @return void
+     */
+    public static function agregar(int $asesorId, int $materiaId): void
+    {
+        $stmt = db()->prepare(
+            'INSERT INTO asesor_materia (asesor_id, materia_id)
+             VALUES (?, ?)'
+        );
+        $stmt->execute([$asesorId, $materiaId]);
+    }
+
+    /**
+     * Quita una marteria a un asesor. Sus bloques de disponibilidad se borran solos 
+     * por el ON DELETE CASCADE
+     * 
+     * @param int $asesorId Id del asesor.
+     * @param int $materiaId Id de la materia.
+     * @return bool true si se borró, false si el asesor no tenía esa materia.
+     */
+    public static function quitar(int $asesorId, int $materiaId): bool
+    {
+        $stmt = db()->prepare(
+            'DELETE FROM asesor_materia
+              WHERE asesor_id = ? AND materia_id = ?'
+        );
+        $stmt->execute([$asesorId, $materiaId]);
+        return $stmt->rowCount() > 0;
+    }
 }
