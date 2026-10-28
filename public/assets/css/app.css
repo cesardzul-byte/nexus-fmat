@@ -58,6 +58,9 @@
     --tamano-boton: 0.9375rem;
     --tamano-subtitulo: 1.25rem;
     --tamano-titulo: 1.75rem;
+    --tamano-portada: 2rem;
+    --tamano-portada-grande: 2.75rem;
+    --tamano-circulo-paso: 2.25rem;
     --interlineado: 1.5;
     --interlineado-titulo: 1.2;
     --peso-normal: 500;
@@ -583,4 +586,117 @@ a {
 .muestra-suave {
     color: var(--color-tinta);
     background-color: var(--color-primario-suave);
+}
+
+/* ===== 12. ISS-09 · Inicio y detalle de materia (P3) ===== */
+
+/* Presentación del inicio */
+.portada {
+    padding: var(--espacio-xl) 0;
+    margin-bottom: var(--espacio-xl);
+    border-bottom: var(--grosor-borde) solid var(--color-borde);
+}
+
+.portada-titulo {
+    font-size: var(--tamano-portada);
+    max-width: 20ch;
+}
+
+.portada-texto {
+    max-width: 38rem;
+    color: var(--color-texto-suave);
+    font-size: var(--tamano-subtitulo);
+}
+
+@media (min-width: 768px) {
+    .portada {
+        padding: var(--espacio-xxl) 0;
+    }
+
+    .portada-titulo {
+        font-size: var(--tamano-portada-grande);
+    }
+}
+
+/* Los tres pasos de "¿Cómo funciona?" */
+.pasos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--espacio-md);
+}
+
+@media (min-width: 768px) {
+    .pasos {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.paso {
+    padding: var(--espacio-lg);
+    background-color: var(--color-fondo-alterno);
+    border-radius: var(--radio);
+}
+
+.paso-numero {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--tamano-circulo-paso);
+    height: var(--tamano-circulo-paso);
+    margin-bottom: var(--espacio-sm);
+    font-weight: var(--peso-extra);
+    color: var(--color-superficie);
+    background-color: var(--color-primario);
+    border-radius: 50%;
+}
+
+.paso-titulo {
+    margin-bottom: var(--espacio-xs);
+    font-size: var(--tamano-base);
+}
+
+.paso p {
+    margin: 0;
+}
+
+/* Buscador y tarjetas de materias */
+.buscador {
+    max-width: var(--ancho-formulario);
+    margin-bottom: var(--espacio-lg);
+}
+
+/* .tarjeta usa display: flex, que le gana al atributo hidden; esto lo respeta */
+.tarjeta[hidden] {
+    display: none;
+}
+
+.tarjeta .boton {
+    margin-top: auto;
+}
+
+.tarjeta-clave {
+    margin: 0;
+    font-size: var(--tamano-chico);
+}
+
+.etiqueta-neutra {
+    color: var(--color-tinta);
+    background-color: var(--color-primario-suave);
+}
+
+/* Detalle de materia */
+.enlace-volver {
+    text-decoration: none;
+}
+
+.materia-titulo {
+    margin-top: var(--espacio-sm);
+}
+
+.lista-asesores {
+    display: grid;
+    gap: var(--espacio-md);
 }
