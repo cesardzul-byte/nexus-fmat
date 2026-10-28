@@ -45,17 +45,19 @@ class Materia
     }
 
     /**
-     * Devuelve la lista de materias ACTIVAS con la cantidad de asesores que tienen asignados, ordenadas por nombre.
+     * Devuelve la lista de materias ACTIVAS con la cantidad de asesores activos que tienen asignados, ordenadas por nombre.
      *
-     * @return array<int, array<string, mixed>> Materias con su id, clave, nombre y cantidad de asesores.
+     * @return array<int, array<string, mixed>> Materias con su id, clave, nombre y cantidad de asesores activos.
      */
     public static function conNumeroAsesores(): array
     {
         // Se agrupa por todas las columnas del SELECT porque MariaDB con ONLY_FULL_GROUP_BY no acepta solo m.id
+        // u.activo va en el ON (no en el WHERE) para conservar las materias sin asesores; por eso se cuenta u.id
         $stmt = db()->query(
-            'SELECT m.id, m.clave, m.nombre, COUNT(am.asesor_id) AS cantidad_asesores
+            'SELECT m.id, m.clave, m.nombre, COUNT(u.id) AS cantidad_asesores
                FROM materias m
                LEFT JOIN asesor_materia am ON am.materia_id = m.id
+               LEFT JOIN usuarios u ON u.id = am.asesor_id AND u.activo = 1
               WHERE m.activa = 1
               GROUP BY m.id, m.clave, m.nombre
               ORDER BY m.nombre'
