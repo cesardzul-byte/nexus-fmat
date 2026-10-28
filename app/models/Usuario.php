@@ -53,4 +53,32 @@ final class Usuario
         $usuario = $stmt->fetch();
         return $usuario ?: null;
     }
+
+    // ===== ISS-10 · Panel por rol (P3) =====
+
+    /** Roles que existen en la tabla usuarios, en el orden en que se muestran. */
+    private const ROLES = ['alumno', 'asesor', 'admin'];
+
+    /**
+     * Cuenta los usuarios activos de cada rol con una sola consulta.
+     * Los roles sin usuarios aparecen con 0, para que el panel siempre muestre los tres.
+     *
+     * @return array{alumno: int, asesor: int, admin: int} Total de usuarios activos por rol.
+     */
+    public static function conteoPorRol(): array
+    {
+        $stmt = db()->query(
+            'SELECT rol, COUNT(*) AS total
+               FROM usuarios
+              WHERE activo = 1
+              GROUP BY rol'
+        );
+
+        $conteo = array_fill_keys(self::ROLES, 0);
+        foreach ($stmt->fetchAll() as $fila) {
+            $conteo[$fila['rol']] = (int) $fila['total'];
+        }
+
+        return $conteo;
+    }
 }
