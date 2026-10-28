@@ -25,3 +25,5 @@ require __DIR__ . '/helpers.php';
 foreach (glob(__DIR__ . '/../models/*.php') ?: [] as $modelo) {
     require $modelo;
 }
+// Hace disponibles las funciones de autenticación y CSRF en todas las páginas.
+require_once __DIR__ . '/auth.php';

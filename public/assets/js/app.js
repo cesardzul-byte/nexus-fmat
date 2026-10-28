@@ -26,3 +26,45 @@ function confirmarEnvio(evento) {
 
 // Se escucha en todo el documento para que funcione con cualquier formulario
 document.addEventListener('submit', confirmarEnvio);
+
+// ===== ISS-09 · Filtro de materias en el inicio (P3) =====
+
+/**
+ * Pasa un texto a minúsculas y le quita los acentos, para que buscar
+ * "algebra" encuentre "Álgebra".
+ * @param {string} texto Texto original.
+ * @returns {string} Texto normalizado.
+ */
+function normalizarTexto(texto) {
+    return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+}
+
+/**
+ * Muestra solo las tarjetas de materia cuyo nombre contiene lo que se
+ * escribió en el buscador. Si ninguna coincide, muestra el aviso de
+ * "sin resultados". No recarga la página.
+ * @param {InputEvent} evento Evento de escritura en el buscador.
+ */
+function filtrarTarjetas(evento) {
+    const busqueda = normalizarTexto(evento.target.value);
+    const tarjetas = document.querySelectorAll('[data-tarjeta-materia]');
+    let visibles = 0;
+
+    tarjetas.forEach((tarjeta) => {
+        const coincide = normalizarTexto(tarjeta.dataset.nombre).includes(busqueda);
+        tarjeta.hidden = !coincide;
+        if (coincide) {
+            visibles += 1;
+        }
+    });
+
+    const avisoSinResultados = document.querySelector('[data-sin-resultados]');
+    if (avisoSinResultados) {
+        avisoSinResultados.hidden = visibles > 0;
+    }
+}
+
+const buscadorMaterias = document.querySelector('[data-filtro-materias]');
+if (buscadorMaterias) {
+    buscadorMaterias.addEventListener('input', filtrarTarjetas);
+}
