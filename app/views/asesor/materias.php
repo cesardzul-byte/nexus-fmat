@@ -34,6 +34,7 @@
                             <td><?= e($materia['nombre']) ?></td>
                             <td>
                                 <form method="post" action="<?= e(url('mis_materias.php')) ?>">
+                                    <?php csrfCampo(); ?>
                                     <input type="hidden" name="accion" value="quitar">
                                     <input type="hidden" name="materia_id" value="<?= e($materia['id']) ?>">
                                     <button class="boton boton-peligro" type="submit"
@@ -56,8 +57,9 @@
     <?php if (empty($disponibles)): ?>
         <p class="texto-suave">Ya impartes todas las materias activas.</p>
     <?php else: ?>
-        <form class="formulario" method="post" action="<?= e(url('mis_materias.php')) ?>">
-            <input type="hidden" name="accion" value="agregar">
+        <form class="formulario" method="post" action="<?= e(url('mis_materias.php')) ?>">   
+        <?php csrfCampo(); ?>
+        <input type="hidden" name="accion" value="agregar">
             <div class="campo">
                 <label for="materia_id">Materia</label>
                 <select id="materia_id" name="materia_id" required>

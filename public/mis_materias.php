@@ -5,19 +5,16 @@
  */
 require __DIR__ . '/../app/includes/bootstrap.php';
 
-//TEMPORAL: se reemplaza por requiereRol('asesor') cuando se fusione ISS-07
+// Solo los asesores entran: el visitante va al login y los demás roles reciben 403
+requiereRol('asesor');
 $usuario = usuarioActual();
-if ($usuario === null) {
-    redirigir('login.php');
-}
-if ($usuario['rol'] !== 'asesor') {
-    abortar(403, 'Solo los asesores pueden gestionar sus materias.');
-}
 
 //El asesor SIEMPRE sale de la sesión, nunca del formulario
 $asesorId = (int) $usuario['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verificarCsrf();
+    
     $accion = $_POST['accion'] ?? '';
     $materiaId = (int) ($_POST['materia_id'] ?? 0);
 
