@@ -39,6 +39,13 @@
     </div>
 
 <?php elseif ($usuario['rol'] === 'admin'): ?>
+    <div class="rejilla-tarjetas">
+        <article class="tarjeta">
+            <h2 class="tarjeta-titulo">Administrar cuentas</h2>
+            <p class="texto-suave">Registra alumnos, asesores o crea otra cuenta administradora desde el mismo formulario.</p>
+            <a class="boton boton-destacado" href="<?= e(url('registro.php?modo=admin')) ?>">Registrar cuenta</a>
+        </article>
+    </div>
     <h2>Resumen</h2>
     <div class="rejilla-estadisticas">
         <article class="tarjeta tarjeta-estadistica">
