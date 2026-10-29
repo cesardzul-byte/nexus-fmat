@@ -46,5 +46,6 @@ $error = isset($error) && is_string($error) ? $error : '';
         <button class="boton boton-principal" type="submit">Iniciar sesión</button>
     </form>
 
+    <p>¿Todavía no tienes cuenta? <a href="<?= e(url('registro.php')) ?>">Regístrate aquí</a>.</p>
     <p><a href="<?= e(url()) ?>">Volver al inicio</a></p>
 </section>

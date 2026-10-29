@@ -68,3 +68,45 @@ const buscadorMaterias = document.querySelector('[data-filtro-materias]');
 if (buscadorMaterias) {
     buscadorMaterias.addEventListener('input', filtrarTarjetas);
 }
+
+// ===== ISS-08 · Registro de alumnos y asesores (P2) =====
+
+/**
+ * Marca el campo de confirmación como inválido si no coincide con la contraseña.
+ * Es solo una ayuda en el navegador: la validación que manda es la del servidor.
+ * @returns {boolean} true si coinciden (o si la página no tiene esos campos).
+ */
+function validarConfirmacionContrasena() {
+    const contrasena = document.querySelector('#contrasena');
+    const confirmacion = document.querySelector('#confirmar_contrasena');
+
+    if (!contrasena || !confirmacion) {
+        return true;
+    }
+
+    if (confirmacion.value !== '' && confirmacion.value !== contrasena.value) {
+        confirmacion.setCustomValidity('Las contraseñas no coinciden.');
+        return false;
+    }
+
+    confirmacion.setCustomValidity('');
+    return true;
+}
+
+const formularioRegistro = document.querySelector('#formulario-registro');
+if (formularioRegistro) {
+    const contrasenaRegistro = formularioRegistro.querySelector('#contrasena');
+    const confirmacionRegistro = formularioRegistro.querySelector('#confirmar_contrasena');
+
+    if (contrasenaRegistro && confirmacionRegistro) {
+        contrasenaRegistro.addEventListener('input', validarConfirmacionContrasena);
+        confirmacionRegistro.addEventListener('input', validarConfirmacionContrasena);
+
+        formularioRegistro.addEventListener('submit', (evento) => {
+            if (!validarConfirmacionContrasena()) {
+                evento.preventDefault();
+                confirmacionRegistro.reportValidity();
+            }
+        });
+    }
+}
