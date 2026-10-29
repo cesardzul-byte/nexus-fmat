@@ -742,3 +742,10 @@ a {
     font-weight: var(--peso-fuerte);
     color: var(--color-texto-suave);
 }
+
+/* ===== 14. ISS-12 · Disponibilidad (P4) ===== */
+
+/* Separa la tabla de un día del título del día siguiente */
+.dia-disponibilidad {
+    margin-bottom: var(--espacio-lg);
+}
