@@ -2,7 +2,7 @@
 
 Issue: ISS-13 · Responsable: P3 (@Pao-Parra)
 
-Pruebas manuales de la revisión 1, hechas como usuario y siguiendo esta lista. Cada caso tiene el resultado esperado, el obtenido y su estado. Cada falla se registra como un issue `tipo:bug` enlazado a ISS-13 y asignado al responsable del issue original.
+Pruebas manuales de la revisión 1, hechas como usuario y siguiendo esta lista. Cada caso tiene el resultado esperado, el obtenido y su estado. Cada falla se registra en la tabla de bugs y se avisa al responsable del issue original.
 
 ## Datos de la prueba
 
@@ -185,4 +185,4 @@ Cosas que no son fallas (el caso pasa), pero conviene considerar para las siguie
 
 | Issue | Caso | Descripción | Responsable | Estado |
 |---|---|---|---|---|
-| B-01 (#_por crear_) | REG-09 | Los errores del registro usan la clase `error-campo`, que no existe en `app.css`; se ven en negro y el campo no se marca. Usar `<span class="mensaje-error">` y agregar `campo-error` al `<div class="campo">` con error | P2 (@oswaldo-castillo) | Abierto |
+| B-01 (avisado a P2 por mensaje) | REG-09 | Los errores del registro usan la clase `error-campo`, que no existe en `app.css`; se ven en negro y el campo no se marca. Usar `<span class="mensaje-error">` y agregar `campo-error` al `<div class="campo">` con error | P2 (@oswaldo-castillo) | Pendiente: se corrige después de la revisión 1 |
