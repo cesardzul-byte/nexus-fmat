@@ -65,7 +65,7 @@ if ($metodo === 'POST') {
     }
 
     // Mismo mensaje para correo desconocido, contraseña incorrecta y cuenta inactiva.
-    $error = 'Correo o contraseña incorrecta';
+    $error = 'Correo o contraseña incorrectos';
 }
 
 vista('auth/login', [

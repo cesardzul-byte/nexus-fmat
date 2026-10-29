@@ -14,20 +14,24 @@ final class Usuario
     public const SEMESTRE_MAXIMO = 9;
 
     /**
-     * Cuenta caracteres Unicode, no bytes. Usa mb_strlen cuando está disponible.
-     * El fallback mantiene el conteo de caracteres UTF-8 en entornos sin mbstring.
+     * Cuenta caracteres, no bytes: "Ñúñez" mide 5 aunque ocupe más bytes en UTF-8.
+     *
+     * @param string $texto Texto a medir.
+     * @return int Número de caracteres.
      */
     public static function longitudCaracteres(string $texto): int
     {
-        if (function_exists('mb_strlen')) {
-            return mb_strlen($texto, 'UTF-8');
-        }
-
-        $cantidad = preg_match_all('/./us', $texto, $coincidencias);
-        return $cantidad === false ? PHP_INT_MAX : $cantidad;
+        return mb_strlen($texto, 'UTF-8');
     }
 
-    /** Comprueba que el correo pertenece exactamente al dominio institucional configurado. */
+    /**
+     * Comprueba que el correo pertenece exactamente al dominio institucional configurado.
+     * Se compara todo lo que va después de la última @, así que un subdominio
+     * como "x.alumnos.uady.mx" no se acepta.
+     *
+     * @param string $correo Correo a revisar.
+     * @return bool true si el dominio es igual a DOMINIO_CORREO.
+     */
     public static function tieneDominioInstitucional(string $correo): bool
     {
         $dominioPermitido = strtolower(ltrim((string) DOMINIO_CORREO, '@'));
@@ -93,7 +97,13 @@ final class Usuario
         return $errores;
     }
 
-    /** Genera el hash seguro usado al almacenar una contraseña. */
+    /**
+     * Genera el hash con el que se guarda una contraseña; nunca se guarda en texto plano.
+     *
+     * @param string $contrasena Contraseña escrita por el usuario.
+     * @return string Hash de password_hash().
+     * @throws RuntimeException Si no se pudo generar el hash.
+     */
     private static function hashContrasena(string $contrasena): string
     {
         $hash = password_hash($contrasena, PASSWORD_DEFAULT);
@@ -103,6 +113,7 @@ final class Usuario
 
         return $hash;
     }
+
     /**
      * Busca una cuenta por su correo institucional.
      * Incluye el hash únicamente para que el controlador pueda verificar la contraseña.
@@ -232,13 +243,23 @@ final class Usuario
 
     /**
      * Indica si el correo o la matrícula ya están registrados.
+     *
+     * @param string $correo Correo a buscar.
+     * @param string $matricula Matrícula a buscar.
+     * @return bool true si alguno de los dos ya existe.
      */
     public static function existeCorreoOMatricula(string $correo, string $matricula): bool
     {
         return self::existeCorreo($correo) || self::existeMatricula($matricula);
     }
 
-    /** Comprueba si existe el correo, para asociar el error al campo correcto. */
+    /**
+     * Comprueba si el correo ya está registrado. Va separada de la matrícula
+     * para mostrar el error junto al campo correcto.
+     *
+     * @param string $correo Correo a buscar; se compara en minúsculas y sin espacios.
+     * @return bool true si ya existe una cuenta con ese correo.
+     */
     public static function existeCorreo(string $correo): bool
     {
         $stmt = db()->prepare(
@@ -248,7 +269,13 @@ final class Usuario
         return $stmt->fetchColumn() !== false;
     }
 
-    /** Comprueba si existe la matrícula, para asociar el error al campo correcto. */
+    /**
+     * Comprueba si la matrícula ya está registrada. Va separada del correo
+     * para mostrar el error junto al campo correcto.
+     *
+     * @param string $matricula Matrícula a buscar, sin espacios.
+     * @return bool true si ya existe una cuenta con esa matrícula.
+     */
     public static function existeMatricula(string $matricula): bool
     {
         $stmt = db()->prepare(
