@@ -8,10 +8,10 @@ Pruebas manuales de la revisión 1, hechas como usuario y siguiendo esta lista. 
 
 | Dato | Valor |
 |---|---|
-| Fecha | _pendiente_ |
-| Computadora | _pendiente_ (distinta a la de P4) |
-| Rama / commit probado | `develop` @ _pendiente_ |
-| Navegadores | Chrome _versión_ · Firefox _versión_ |
+| Fecha | 28 y 29/10/2026 |
+| Computadora | La de P3 (@Pao-Parra), distinta a la de P4 |
+| Rama / commit probado | `develop` con ISS-01 a ISS-12 fusionados (incluye ISS-08) |
+| Navegadores | Chrome · Firefox (versiones actuales) |
 | XAMPP / PHP / MariaDB | 8.2.12 / 8.2.12 / 10.4.32 |
 
 **Cuentas demo** (contraseña `Demo1234`):
@@ -34,12 +34,12 @@ Se hace en una computadora distinta a la de P4, siguiendo solo el README y sin p
 
 | ID | Caso | Pasos | Esperado | Obtenido | Estado |
 |---|---|---|---|---|---|
-| INS-01 | Clonar | Clonar el repo en `C:/xampp/htdocs` como dice el README | Se crea `nexus-fmat` con todas las carpetas | | ⏳ |
-| INS-02 | Importar BD | Importar `schema.sql` y después `seed.sql` en phpMyAdmin | Sin errores; base `nexus_fmat` con 7 tablas | | ⏳ |
-| INS-03 | Reimportar | Volver a importar `schema.sql` y `seed.sql` | Sin errores (el script borra y crea de nuevo) | | ⏳ |
-| INS-04 | Configurar | Copiar `config.example.php` a `config.php` | `git status` no muestra `config.php` | | ⏳ |
-| INS-05 | Abrir la app | Abrir `http://localhost/nexus-fmat/public/` | Se ve la página de inicio, sin errores de PHP | | ⏳ |
-| INS-06 | Carpeta `app/` protegida | Abrir `http://localhost/nexus-fmat/app/config/config.php` | Responde 403 | | ⏳ |
+| INS-01 | Clonar | Clonar el repo en `C:/xampp/htdocs` como dice el README | Se crea `nexus-fmat` con todas las carpetas | Clonado en C:/xampp/htdocs/nexus-fmat siguiendo el README, en la computadora de P3 | ✅ |
+| INS-02 | Importar BD | Importar `schema.sql` y después `seed.sql` en phpMyAdmin | Sin errores; base `nexus_fmat` con 7 tablas | schema.sql y seed.sql se importan sin errores; base nexus_fmat con 7 tablas | ✅ |
+| INS-03 | Reimportar | Volver a importar `schema.sql` y `seed.sql` | Sin errores (el script borra y crea de nuevo) | Reimportar los dos scripts no da errores | ✅ |
+| INS-04 | Configurar | Copiar `config.example.php` a `config.php` | `git status` no muestra `config.php` | config.php copiado de config.example.php; git status no lo muestra | ✅ |
+| INS-05 | Abrir la app | Abrir `http://localhost/nexus-fmat/public/` | Se ve la página de inicio, sin errores de PHP | El inicio se abre sin errores de PHP | ✅ |
+| INS-06 | Carpeta `app/` protegida | Abrir `http://localhost/nexus-fmat/app/config/config.php` | Responde 403 | Responde 403 Forbidden | ✅ |
 
 ## 2. Inicio y cierre de sesión (ISS-07)
 
@@ -51,11 +51,11 @@ Se hace en una computadora distinta a la de P4, siguiendo solo el README y sin p
 | SES-04 | Contraseña incorrecta | Correo de Juan con contraseña `otra1234` | "Correo o contraseña incorrectos" y se conserva el correo escrito | Muestra "Correo o contraseña incorrectos" y conserva el correo escrito | ✅ |
 | SES-05 | Correo inexistente | `nadie@demo.uady.mx` con `Demo1234` | El mismo mensaje que SES-04 | Muestra el mismo mensaje que SES-04 | ✅ |
 | SES-06 | Usuario inactivo | Poner `activo = 0` a Juan en phpMyAdmin e intentar entrar | No entra; mismo mensaje. Regresar `activo = 1` al terminar | Con activo = 0 muestra "Correo o contraseña incorrectos"; con activo = 1 vuelve a entrar | ✅ |
-| SES-07 | Cambia la sesión | Ver la cookie `PHPSESSID` (F12 → Aplicación) antes y después de entrar | El valor cambia al iniciar sesión | | ⏳ |
+| SES-07 | Cambia la sesión | Ver la cookie `PHPSESSID` (F12 → Aplicación) antes y después de entrar | El valor cambia al iniciar sesión | El valor de PHPSESSID cambia al iniciar sesión | ✅ |
 | SES-08 | Login con sesión abierta | Ya con sesión, abrir `login.php` | Manda a `panel.php` | Manda directo al panel | ✅ |
 | SES-09 | Cerrar sesión | Clic en "Cerrar sesión" | Va al inicio con un aviso; el menú vuelve a mostrar "Iniciar sesión" | Regresa al inicio con aviso; el menú vuelve a mostrar Iniciar sesión | ✅ |
 | SES-10 | Atrás después de salir | Después de SES-09, presionar "atrás" y recargar | No muestra el panel; manda al login | Después de cerrar sesión, al presionar atrás manda al login | ✅ |
-| SES-11 | CSRF en logout | Con F12, borrar o cambiar el valor del campo oculto del token y enviar "Cerrar sesión" | Se rechaza (400) y la sesión sigue abierta | | ⏳ |
+| SES-11 | CSRF en logout | Con F12, borrar o cambiar el valor del campo oculto del token y enviar "Cerrar sesión" | Se rechaza (400) y la sesión sigue abierta | Con el token alterado responde 400 y la sesión sigue abierta | ✅ |
 
 ## 3. Registro (ISS-08)
 
@@ -69,7 +69,7 @@ Se hace en una computadora distinta a la de P4, siguiendo solo el README y sin p
 | REG-06 | Matrícula con letras | Matrícula `12AB5678` | Error junto al campo | Error de formato junto a la matrícula | ✅ |
 | REG-07 | Contraseña corta | Contraseña `abc123` | Error: mínimo 8 caracteres | Error de contraseña corta | ✅ |
 | REG-08 | Contraseñas distintas | Confirmación diferente | El navegador avisa; con JS desactivado, el servidor también | Avisa que las contraseñas no coinciden | ✅ |
-| REG-09 | Se conserva lo escrito | Provocar cualquier error | Los campos se conservan, excepto las contraseñas | Se conservan los datos escritos. Los mensajes de error se ven en texto negro, sin rojo ni borde rojo (ver bug B-02). Con un campo obligatorio vacío el navegador no envía el formulario, por eso la contraseña sigue escrita (comportamiento normal) | ✅ |
+| REG-09 | Se conserva lo escrito | Provocar cualquier error | Los campos se conservan, excepto las contraseñas | Se conservan los datos escritos. Los mensajes de error se ven en texto negro, sin rojo ni borde rojo (ver bug B-01). Con un campo obligatorio vacío el navegador no envía el formulario, por eso la contraseña sigue escrita (comportamiento normal) | ✅ |
 | REG-10 | Rol admin forzado | Con F12, cambiar el valor de una opción de rol a `admin` y enviar | Se rechaza; no se crea un admin | Rechazado: "El tipo de cuenta seleccionado no está permitido" | ✅ |
 | REG-11 | Sin JavaScript | Desactivar JS (F12 → Configuración) y repetir REG-05 y REG-07 | El servidor muestra los mismos errores | Con JavaScript desactivado (y la validación del navegador desactivada con novalidate), el servidor muestra los errores de correo y contraseña | ✅ |
 | REG-12 | Registro con sesión abierta | Con sesión de administrador (y luego de alumno), abrir `registro.php` y crear una cuenta | Manda al panel, como `login.php`, para no reemplazar la sesión actual | Con sesión de Ana, registro.php manda al panel; no hay enlace a registro con sesión | ✅ |
@@ -153,17 +153,19 @@ En cada página: F12 → modo dispositivo → ancho 360.
 
 ## Resumen
 
+Todos los casos dieron el resultado esperado. Se encontró 1 bug de estilo (no impide la demo) y algunas mejoras para las siguientes revisiones.
+
 | Sección | Casos | ✅ | ❌ | ⏳ |
 |---|---|---|---|---|
-| 1. Instalación | 6 | | | 6 |
-| 2. Sesión | 11 | | | 11 |
-| 3. Registro | 12 | | | 12 |
-| 4. Permisos | 7 | | | 7 |
-| 5. Materias del asesor | 7 | | | 7 |
-| 6. Disponibilidad | 17 | | | 17 |
-| 7. Inicio y detalle | 8 | | | 8 |
-| 8. Vista y navegadores | 7 | | | 7 |
-| **Total** | **75** | | | **75** |
+| 1. Instalación | 6 | 6 | 0 | 0 |
+| 2. Sesión | 11 | 11 | 0 | 0 |
+| 3. Registro | 12 | 12 | 0 | 0 |
+| 4. Permisos | 7 | 7 | 0 | 0 |
+| 5. Materias del asesor | 7 | 7 | 0 | 0 |
+| 6. Disponibilidad | 17 | 17 | 0 | 0 |
+| 7. Inicio y detalle | 8 | 8 | 0 | 0 |
+| 8. Vista y navegadores | 7 | 7 | 0 | 0 |
+| **Total** | **75** | **75** | **0** | **0** |
 
 ## Observaciones y mejoras
 
@@ -176,11 +178,11 @@ Cosas que no son fallas (el caso pasa), pero conviene considerar para las siguie
 | IDX-06 / IDX-07 | El 404 solo aparece al abrir un enlace con un id inválido; el buscador del inicio nunca lleva ahí porque filtra las tarjetas en la misma página | Comportamiento correcto: el 404 protege contra enlaces viejos o modificados a mano |
 | REG-12 | Se dudaba si el admin podía registrar cuentas con su sesión abierta | Confirmado: con sesión, `registro.php` manda al panel. Crear usuarios desde el admin no es de la revisión 1 |
 | SES-02 | En "Mi disponibilidad" el asesor no ve cuántos alumnos tendrá en cada bloque | Las sesiones agendadas son de la revisión 2; ahí conviene mostrar cuántas sesiones tiene cada bloque |
+| SES-01 / REG-01 | Los botones "Iniciar sesión" y "Crear cuenta" usan la clase `boton-principal`, que no existe en `app.css`, y se ven sin el estilo de los demás botones. No afecta el funcionamiento | Opcional: cambiarla por `boton boton-destacado` |
 | SES-04 / SES-05 | El login no dice si lo incorrecto es el correo o la contraseña | Es intencional por seguridad: si dijera "ese correo no existe", cualquiera podría averiguar qué correos tienen cuenta. Se recomienda dejarlo así |
 
 ## Bugs encontrados
 
 | Issue | Caso | Descripción | Responsable | Estado |
 |---|---|---|---|---|
-| B-01 (#_por crear_) | SES-01, REG-01 | Los botones "Iniciar sesión" y "Crear cuenta" usan la clase `boton-principal`, que no existe en `app.css`; se ven sin estilo. Usar `boton boton-destacado` | P2 (@oswaldo-castillo) | Abierto |
-| B-02 (#_por crear_) | REG-09 | Los errores del registro usan la clase `error-campo`, que no existe en `app.css`; se ven en negro y el campo no se marca. Usar `<span class="mensaje-error">` y agregar `campo-error` al `<div class="campo">` con error | P2 (@oswaldo-castillo) | Abierto |
+| B-01 (#_por crear_) | REG-09 | Los errores del registro usan la clase `error-campo`, que no existe en `app.css`; se ven en negro y el campo no se marca. Usar `<span class="mensaje-error">` y agregar `campo-error` al `<div class="campo">` con error | P2 (@oswaldo-castillo) | Abierto |
