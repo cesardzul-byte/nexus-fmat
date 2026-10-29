@@ -700,3 +700,52 @@ a {
     display: grid;
     gap: var(--espacio-md);
 }
+
+/* ===== 13. ISS-10 · Panel por rol (P3) ===== */
+
+.saludo {
+    margin-bottom: var(--espacio-xl);
+}
+
+.saludo h1 {
+    margin-top: var(--espacio-sm);
+    margin-bottom: var(--espacio-xs);
+}
+
+/* Números del administrador: dos columnas en celular y cuatro en escritorio */
+.rejilla-estadisticas {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--espacio-md);
+}
+
+@media (min-width: 768px) {
+    .rejilla-estadisticas {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.tarjeta-estadistica {
+    gap: 0;
+    text-align: center;
+}
+
+.estadistica-numero {
+    margin: 0;
+    font-size: var(--tamano-portada);
+    font-weight: var(--peso-extra);
+    color: var(--color-primario);
+}
+
+.estadistica-etiqueta {
+    margin: 0;
+    font-weight: var(--peso-fuerte);
+    color: var(--color-texto-suave);
+}
+
+/* ===== 14. ISS-12 · Disponibilidad (P4) ===== */
+
+/* Separa la tabla de un día del título del día siguiente */
+.dia-disponibilidad {
+    margin-bottom: var(--espacio-lg);
+}
