@@ -1,10 +1,17 @@
 <?php
 /**
- * Controlador de inicio de sesión.
+ * Controlador de inicio de sesión (ISS-07).
+ * Verifica siempre una contraseña para reducir diferencias de tiempo entre
+ * un correo inexistente y un correo existente.
  */
 declare(strict_types=1);
 
 require __DIR__ . '/../app/includes/bootstrap.php';
+
+// Hash bcrypt de relleno (costo 10, igual que las cuentas demo de seed.sql).
+// Su resultado nunca autentica a nadie: solo se usa cuando el correo no existe
+// o la fila no contiene un hash válido.
+$hashRelleno = '$2y$10$O40mCxcfcXoY.GOejBWmpOBkU/O2eYWuWh9UnKBpf0whKEiOlRD9q';
 
 // Si ya hay una sesión, se evita volver a mostrar el formulario de acceso.
 if (usuarioActual() !== null) {
@@ -38,10 +45,18 @@ if ($metodo === 'POST') {
     $contrasena = is_string($contrasenaEnviada) ? $contrasenaEnviada : '';
 
     $usuario = Usuario::buscarPorCorreo($correo);
+    $hashVerificar = $usuario !== null
+        && is_string($usuario['password_hash'] ?? null)
+        && $usuario['password_hash'] !== ''
+            ? $usuario['password_hash']
+            : $hashRelleno;
+
+    // Se ejecuta incluso cuando el correo no existe o la cuenta está inactiva.
+    $contrasenaCorrecta = password_verify($contrasena, $hashVerificar);
+
     $credencialesCorrectas = $usuario !== null
         && (int) ($usuario['activo'] ?? 0) === 1
-        && is_string($usuario['password_hash'] ?? null)
-        && password_verify($contrasena, $usuario['password_hash']);
+        && $contrasenaCorrecta;
 
     if ($credencialesCorrectas) {
         iniciarSesion($usuario);
@@ -49,7 +64,7 @@ if ($metodo === 'POST') {
         redirigir('panel.php');
     }
 
-    // Se usa el mismo mensaje para correo desconocido, contraseña incorrecta y cuenta inactiva.
+    // Mismo mensaje para correo desconocido, contraseña incorrecta y cuenta inactiva.
     $error = 'Correo o contraseña incorrectos';
 }
 
