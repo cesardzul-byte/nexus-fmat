@@ -1,7 +1,10 @@
 <?php
 /**
- * Lista de enlaces de navegación. El header la incluye tanto en escritorio
- * como en el menú móvil, para no duplicar la lógica de permisos.
+ * Lista de enlaces de la navegación. El header la incluye dos veces: una para
+ * escritorio y otra dentro del menú desplegable de celular, así no se repite el HTML.
+ *
+ * El visitante ve Inicio, Iniciar sesión y Registrarse. El usuario con sesión
+ * ve Inicio, Panel, su nombre y Cerrar sesión.
  */
 $usuarioNav = usuarioActual();
 ?>
@@ -12,14 +15,13 @@ $usuarioNav = usuarioActual();
         <li><a href="<?= e(url('registro.php')) ?>">Registrarse</a></li>
     <?php else: ?>
         <li><a href="<?= e(url('panel.php')) ?>">Panel</a></li>
-        <?php if (($usuarioNav['rol'] ?? null) === 'admin'): ?>
-            <li><a href="<?= e(url('registro.php?tipo=admin')) ?>">Registrar administrador</a></li>
-        <?php endif; ?>
-        <li class="nav-usuario"><?= e($usuarioNav['nombre'] ?? '') ?></li>
+        <li class="nav-usuario"><?= e($usuarioNav['nombre']) ?></li>
         <li>
-            <!-- El cierre usa POST y token CSRF (ISS-07). -->
+            <!-- Cerrar sesión es POST para que un enlace externo no pueda cerrarla (ISS-07 crea logout.php) -->
             <form method="post" action="<?= e(url('logout.php')) ?>">
-                <?php csrfCampo(); ?>
+                <?php if (function_exists('csrfCampo')): ?>
+                    <?php csrfCampo(); ?>
+                <?php endif; ?>
                 <button type="submit">Cerrar sesión</button>
             </form>
         </li>
