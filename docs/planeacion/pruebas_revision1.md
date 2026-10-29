@@ -50,7 +50,7 @@ Se hace en una computadora distinta a la de P4, siguiendo solo el README y sin p
 | SES-03 | Entrar como alumno | Iniciar sesión con la cuenta de Juan | Llega a `panel.php` | Llega al panel de alumno | ✅ |
 | SES-04 | Contraseña incorrecta | Correo de Juan con contraseña `otra1234` | "Correo o contraseña incorrectos" y se conserva el correo escrito | Muestra "Correo o contraseña incorrectos" y conserva el correo escrito | ✅ |
 | SES-05 | Correo inexistente | `nadie@demo.uady.mx` con `Demo1234` | El mismo mensaje que SES-04 | Muestra el mismo mensaje que SES-04 | ✅ |
-| SES-06 | Usuario inactivo | Poner `activo = 0` a Juan en phpMyAdmin e intentar entrar | No entra; mismo mensaje. Regresar `activo = 1` al terminar | | ⏳ |
+| SES-06 | Usuario inactivo | Poner `activo = 0` a Juan en phpMyAdmin e intentar entrar | No entra; mismo mensaje. Regresar `activo = 1` al terminar | Con activo = 0 muestra "Correo o contraseña incorrectos"; con activo = 1 vuelve a entrar | ✅ |
 | SES-07 | Cambia la sesión | Ver la cookie `PHPSESSID` (F12 → Aplicación) antes y después de entrar | El valor cambia al iniciar sesión | | ⏳ |
 | SES-08 | Login con sesión abierta | Ya con sesión, abrir `login.php` | Manda a `panel.php` | Manda directo al panel | ✅ |
 | SES-09 | Cerrar sesión | Clic en "Cerrar sesión" | Va al inicio con un aviso; el menú vuelve a mostrar "Iniciar sesión" | Regresa al inicio con aviso; el menú vuelve a mostrar Iniciar sesión | ✅ |
@@ -62,7 +62,7 @@ Se hace en una computadora distinta a la de P4, siguiendo solo el README y sin p
 | ID | Caso | Pasos | Esperado | Obtenido | Estado |
 |---|---|---|---|---|---|
 | REG-01 | Registro válido | Llenar todo con un correo `@alumnos.uady.mx` nuevo, matrícula nueva, contraseña de 8+ | Crea la cuenta, inicia sesión y llega al panel con mensaje de bienvenida | Crea la cuenta e inicia sesión | ✅ |
-| REG-02 | Contraseña hasheada | Revisar el usuario de REG-01 en phpMyAdmin | `password_hash` empieza con `$2y$`, nunca es la contraseña en texto | | ⏳ |
+| REG-02 | Contraseña hasheada | Revisar el usuario de REG-01 en phpMyAdmin | `password_hash` empieza con `$2y$`, nunca es la contraseña en texto | password_hash empieza con $2y$; la contraseña no se guarda en texto | ✅ |
 | REG-03 | Correo repetido | Registrarse de nuevo con el correo de REG-01 | Error junto al campo correo; no se crea nada | Error junto al correo: ya existe una cuenta con este correo | ✅ |
 | REG-04 | Matrícula repetida | Usar la matrícula `12345678` | Error junto al campo matrícula; no se crea nada | Error junto a la matrícula: ya existe una cuenta con esta matrícula | ✅ |
 | REG-05 | Otro dominio | Correo `ana@gmail.com` | Error de dominio junto al campo | Error de dominio junto al correo | ✅ |
@@ -70,8 +70,8 @@ Se hace en una computadora distinta a la de P4, siguiendo solo el README y sin p
 | REG-07 | Contraseña corta | Contraseña `abc123` | Error: mínimo 8 caracteres | Error de contraseña corta | ✅ |
 | REG-08 | Contraseñas distintas | Confirmación diferente | El navegador avisa; con JS desactivado, el servidor también | Avisa que las contraseñas no coinciden | ✅ |
 | REG-09 | Se conserva lo escrito | Provocar cualquier error | Los campos se conservan, excepto las contraseñas | Se conservan los datos escritos. Los mensajes de error se ven en texto negro, sin rojo ni borde rojo (ver bug B-02). Con un campo obligatorio vacío el navegador no envía el formulario, por eso la contraseña sigue escrita (comportamiento normal) | ✅ |
-| REG-10 | Rol admin forzado | Con F12, cambiar el valor de una opción de rol a `admin` y enviar | Se rechaza; no se crea un admin | | ⏳ |
-| REG-11 | Sin JavaScript | Desactivar JS (F12 → Configuración) y repetir REG-05 y REG-07 | El servidor muestra los mismos errores | | ⏳ |
+| REG-10 | Rol admin forzado | Con F12, cambiar el valor de una opción de rol a `admin` y enviar | Se rechaza; no se crea un admin | Rechazado: "El tipo de cuenta seleccionado no está permitido" | ✅ |
+| REG-11 | Sin JavaScript | Desactivar JS (F12 → Configuración) y repetir REG-05 y REG-07 | El servidor muestra los mismos errores | Con JavaScript desactivado (y la validación del navegador desactivada con novalidate), el servidor muestra los errores de correo y contraseña | ✅ |
 | REG-12 | Registro con sesión abierta | Con sesión de administrador (y luego de alumno), abrir `registro.php` y crear una cuenta | Manda al panel, como `login.php`, para no reemplazar la sesión actual | Con sesión de Ana, registro.php manda al panel; no hay enlace a registro con sesión | ✅ |
 
 ## 4. Permisos por rol (ISS-07, ISS-10, ISS-11, ISS-12)
@@ -92,11 +92,11 @@ Se hace en una computadora distinta a la de P4, siguiendo solo el README y sin p
 |---|---|---|---|---|---|
 | MAT-01 | Ver mis materias | Como Luis, abrir "Mis materias" | Lista Cálculo Diferencial y Cálculo Integral | Aparecen Cálculo Diferencial y Cálculo Integral | ✅ |
 | MAT-02 | Agregar materia | Agregar Probabilidad | Aparece en la lista con mensaje de éxito; en el inicio, Probabilidad sube a 1 asesor | Probabilidad se agrega a la lista con mensaje de éxito y el inicio la muestra con 1 asesor | ✅ |
-| MAT-03 | Agregar repetida | Con F12, forzar el id de una materia que ya tiene | Se rechaza con un mensaje | | ⏳ |
-| MAT-04 | Materia inexistente | Con F12, cambiar el id a `9999` | Se rechaza | | ⏳ |
+| MAT-03 | Agregar repetida | Con F12, forzar el id de una materia que ya tiene | Se rechaza con un mensaje | Rechazado con mensaje | ✅ |
+| MAT-04 | Materia inexistente | Con F12, cambiar el id a `9999` | Se rechaza | Rechazado | ✅ |
 | MAT-05 | Quitar materia | Quitar Probabilidad | Pide confirmación (avisa que borra sus bloques); al aceptar desaparece | El navegador pide confirmación antes de quitarla; al aceptar desaparece | ✅ |
-| MAT-06 | Quitar borra bloques | Quitar una materia con bloques y revisar "Mi disponibilidad" y su detalle | Sus bloques ya no existen | | ⏳ |
-| MAT-07 | Quitar de otro asesor | Como Luis, con F12 cambiar el id para quitar una materia de Laura | No se quita nada de Laura | | ⏳ |
+| MAT-06 | Quitar borra bloques | Quitar una materia con bloques y revisar "Mi disponibilidad" y su detalle | Sus bloques ya no existen | Al quitar Cálculo Integral se borra su bloque del miércoles. Al volver a agregar la materia, los bloques anteriores ya no regresan (se borraron en cascada) | ✅ |
+| MAT-07 | Quitar de otro asesor | Como Luis, con F12 cambiar el id para quitar una materia de Laura | No se quita nada de Laura | No se quita nada de Laura | ✅ |
 
 ## 6. Disponibilidad y empalmes (ISS-12)
 
@@ -113,14 +113,14 @@ Antes: como Luis, crear el bloque **jueves 10:00–12:00** de Cálculo Diferenci
 | DIS-07 | Solo se tocan (antes) | Jueves 08:00–10:00 | Aceptado | Aceptado | ✅ |
 | DIS-08 | Otro día | Viernes 10:00–12:00 | Aceptado | Aceptado en otro día | ✅ |
 | DIS-09 | Editar sin cambiar horas | Editar el lugar del bloque jueves 10:00–12:00 | Se guarda; no choca consigo mismo | Se edita el lugar sin chocar consigo mismo | ✅ |
-| DIS-10 | Inicio ≥ fin | Con F12, enviar 12:00–10:00 | Rechazado por el servidor | | ⏳ |
-| DIS-11 | Fuera de horario | Con F12, enviar 06:00–08:00 y 20:30–22:00 | Rechazados (07:00–21:00) | | ⏳ |
-| DIS-12 | Minutos inválidos | Con F12, enviar 10:15–11:00 | Rechazado (solo :00 o :30) | | ⏳ |
-| DIS-13 | Día 7 | Con F12, cambiar el día a `7` | Rechazado | | ⏳ |
-| DIS-14 | Materia que no imparte | Con F12, poner el id de Álgebra Lineal | Rechazado | | ⏳ |
-| DIS-15 | Bloque de otro asesor | Como Luis, cambiar el id de editar/eliminar por uno de Laura | Responde 404 | | ⏳ |
+| DIS-10 | Inicio ≥ fin | Con F12, enviar 12:00–10:00 | Rechazado por el servidor | Rechazado | ✅ |
+| DIS-11 | Fuera de horario | Con F12, enviar 06:00–08:00 y 20:30–22:00 | Rechazados (07:00–21:00) | Rechazados fuera de 07:00–21:00 | ✅ |
+| DIS-12 | Minutos inválidos | Con F12, enviar 10:15–11:00 | Rechazado (solo :00 o :30) | Rechazado | ✅ |
+| DIS-13 | Día 7 | Con F12, cambiar el día a `7` | Rechazado | Rechazado: "Elige un día de lunes a sábado" | ✅ |
+| DIS-14 | Materia que no imparte | Con F12, poner el id de Álgebra Lineal | Rechazado | Rechazado por el servidor; al recargar el formulario vuelve a su estado original | ✅ |
+| DIS-15 | Bloque de otro asesor | Como Luis, cambiar el id de editar/eliminar por uno de Laura | Responde 404 | Responde 404 | ✅ |
 | DIS-16 | Eliminar bloque | Eliminar el viernes 10:00–12:00 | Pide confirmación y desaparece | Pide confirmación y desaparece. Un intento sin diálogo fue por el navegador (diálogos bloqueados); al recargar vuelve a pedirla | ✅ |
-| DIS-17 | Asesor sin materias | Quitarle todas sus materias a un asesor y abrir "Mi disponibilidad" | Aviso con enlace a "Mis materias" | | ⏳ |
+| DIS-17 | Asesor sin materias | Quitarle todas sus materias a un asesor y abrir "Mi disponibilidad" | Aviso con enlace a "Mis materias" | Aparece el aviso de que todavía no imparte ninguna materia, con enlace a Mis materias | ✅ |
 
 ## 7. Inicio y detalle de materia (ISS-09)
 
@@ -141,13 +141,13 @@ En cada página: F12 → modo dispositivo → ancho 360.
 
 | ID | Caso | Pasos | Esperado | Obtenido | Estado |
 |---|---|---|---|---|---|
-| VIS-01 | Inicio a 360 px | Abrir el inicio | Sin scroll horizontal; botón "Menú" funciona | | ⏳ |
-| VIS-02 | Detalle a 360 px | Abrir el detalle de una materia | Sin scroll horizontal; la tabla se desliza sola | | ⏳ |
-| VIS-03 | Login y registro a 360 px | Abrir ambos | Formularios usables, sin scroll horizontal | | ⏳ |
-| VIS-04 | Panel a 360 px | Entrar con cada rol | Tarjetas una debajo de otra | | ⏳ |
-| VIS-05 | Páginas del asesor a 360 px | "Mis materias" y "Mi disponibilidad" | Usables, sin scroll horizontal | | ⏳ |
-| VIS-06 | Chrome | Repetir IDX-01, SES-01 y DIS-02 | Igual que lo esperado | | ⏳ |
-| VIS-07 | Firefox | Repetir IDX-01, SES-01 y DIS-02 | Igual que lo esperado | | ⏳ |
+| VIS-01 | Inicio a 360 px | Abrir el inicio | Sin scroll horizontal; botón "Menú" funciona | Sin scroll horizontal a 360 px; el botón Menú funciona (Chrome y Firefox) | ✅ |
+| VIS-02 | Detalle a 360 px | Abrir el detalle de una materia | Sin scroll horizontal; la tabla se desliza sola | Sin scroll horizontal a 360 px | ✅ |
+| VIS-03 | Login y registro a 360 px | Abrir ambos | Formularios usables, sin scroll horizontal | Formularios usables a 360 px | ✅ |
+| VIS-04 | Panel a 360 px | Entrar con cada rol | Tarjetas una debajo de otra | Tarjetas una debajo de otra a 360 px | ✅ |
+| VIS-05 | Páginas del asesor a 360 px | "Mis materias" y "Mi disponibilidad" | Usables, sin scroll horizontal | Usables a 360 px | ✅ |
+| VIS-06 | Chrome | Repetir IDX-01, SES-01 y DIS-02 | Igual que lo esperado | Funciona en Chrome | ✅ |
+| VIS-07 | Firefox | Repetir IDX-01, SES-01 y DIS-02 | Igual que lo esperado | Funciona en Firefox | ✅ |
 
 ---
 
