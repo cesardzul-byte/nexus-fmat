@@ -2,7 +2,7 @@
 
 Issue: ISS-13 · Responsable: P3 (@Pao-Parra)
 
-Pruebas manuales de la revisión 1, hechas como usuario y siguiendo esta lista. Cada caso tiene el resultado esperado, el obtenido y su estado. Cada falla se registra en la tabla de bugs y se avisa al responsable del issue original.
+Pruebas manuales de la revisión 1, hechas como usuario y siguiendo esta lista. Cada caso tiene el resultado esperado, el obtenido y su estado. Cada falla se registra como un issue `tipo:bug` enlazado a ISS-13 y asignado al responsable del issue original.
 
 ## Datos de la prueba
 
@@ -10,9 +10,10 @@ Pruebas manuales de la revisión 1, hechas como usuario y siguiendo esta lista. 
 |---|---|
 | Fecha | 28 y 29/10/2026 |
 | Computadora | La de P3 (@Pao-Parra), distinta a la de P4 |
-| Rama / commit probado | `develop` con ISS-01 a ISS-12 fusionados (incluye ISS-08) |
+| Rama / commit probado | `develop` en `9d039c0`, con ISS-01 a ISS-12 fusionados (incluye ISS-08) |
 | Navegadores | Chrome · Firefox (versiones actuales) |
 | XAMPP / PHP / MariaDB | 8.2.12 / 8.2.12 / 10.4.32 |
+| Instalación | Solo con el README, sin pedir ayuda |
 
 **Cuentas demo** (contraseña `Demo1234`):
 
@@ -69,7 +70,7 @@ Se hace en una computadora distinta a la de P4, siguiendo solo el README y sin p
 | REG-06 | Matrícula con letras | Matrícula `12AB5678` | Error junto al campo | Error de formato junto a la matrícula | ✅ |
 | REG-07 | Contraseña corta | Contraseña `abc123` | Error: mínimo 8 caracteres | Error de contraseña corta | ✅ |
 | REG-08 | Contraseñas distintas | Confirmación diferente | El navegador avisa; con JS desactivado, el servidor también | Avisa que las contraseñas no coinciden | ✅ |
-| REG-09 | Se conserva lo escrito | Provocar cualquier error | Los campos se conservan, excepto las contraseñas | Se conservan los datos escritos. Los mensajes de error se ven en texto negro, sin rojo ni borde rojo (ver bug B-01). Con un campo obligatorio vacío el navegador no envía el formulario, por eso la contraseña sigue escrita (comportamiento normal) | ✅ |
+| REG-09 | Se conserva lo escrito | Provocar cualquier error | Los campos se conservan, excepto las contraseñas | Se conservan los datos escritos. Los mensajes de error se ven en texto negro, sin rojo ni borde rojo (ver bug #31). Con un campo obligatorio vacío el navegador no envía el formulario, por eso la contraseña sigue escrita (comportamiento normal) | ✅ |
 | REG-10 | Rol admin forzado | Con F12, cambiar el valor de una opción de rol a `admin` y enviar | Se rechaza; no se crea un admin | Rechazado: "El tipo de cuenta seleccionado no está permitido" | ✅ |
 | REG-11 | Sin JavaScript | Desactivar JS (F12 → Configuración) y repetir REG-05 y REG-07 | El servidor muestra los mismos errores | Con JavaScript desactivado (y la validación del navegador desactivada con novalidate), el servidor muestra los errores de correo y contraseña | ✅ |
 | REG-12 | Registro con sesión abierta | Con sesión de administrador (y luego de alumno), abrir `registro.php` y crear una cuenta | Manda al panel, como `login.php`, para no reemplazar la sesión actual | Con sesión de Ana, registro.php manda al panel; no hay enlace a registro con sesión | ✅ |
@@ -100,16 +101,16 @@ Se hace en una computadora distinta a la de P4, siguiendo solo el README y sin p
 
 ## 6. Disponibilidad y empalmes (ISS-12)
 
-Antes: como Luis, crear el bloque **jueves 10:00–12:00** de Cálculo Diferencial (se usa el jueves porque los datos demo ya tienen un bloque de Luis el jueves 09:00–11:00).
+Antes: como Luis, crear el bloque **jueves 10:00–12:00** de Cálculo Diferencial (se usa el jueves porque los datos demo ya tienen un bloque de Luis el lunes 09:00–11:00). DIS-02 y DIS-06 se prueban contra ese bloque del lunes.
 
 | ID | Caso | Pasos | Esperado | Obtenido | Estado |
 |---|---|---|---|---|---|
 | DIS-01 | Prueba automática | `php -d zend.assertions=1 tests/horario_check.php` | Termina sin errores | OK: horario_check pasó todos los casos | ✅ |
-| DIS-02 | Choque parcial (después) | Jueves 11:00–13:00 | Rechazado: "Se empalma con Cálculo Diferencial, jueves 10:00–12:00" | Probado con el bloque demo lunes 09:00–11:00: un bloque lunes 10:00–12:00 se rechaza con "Se empalma con Cálculo Diferencial" | ✅ |
+| DIS-02 | Choque parcial (después) | Lunes 10:00–12:00 | Rechazado: "Se empalma con Cálculo Diferencial, lunes 09:00–11:00" | Probado con el bloque demo lunes 09:00–11:00: un bloque lunes 10:00–12:00 se rechaza con "Se empalma con Cálculo Diferencial" | ✅ |
 | DIS-03 | Choque parcial (antes) | Jueves 09:00–10:30 | Rechazado | Rechazado por empalme | ✅ |
 | DIS-04 | Bloque contenido | Jueves 10:30–11:30 | Rechazado | Rechazado por empalme | ✅ |
 | DIS-05 | Bloque idéntico, otra materia | Jueves 10:00–12:00 de Cálculo Integral | Rechazado | Rechazado aunque sea de otra materia | ✅ |
-| DIS-06 | Solo se tocan (después) | Jueves 12:00–13:00 | Aceptado | Probado con el bloque demo: lunes 11:00–13:00 (solo toca el 09:00–11:00) se acepta | ✅ |
+| DIS-06 | Solo se tocan (después) | Lunes 11:00–13:00 | Aceptado | Probado con el bloque demo: lunes 11:00–13:00 (solo toca el 09:00–11:00) se acepta | ✅ |
 | DIS-07 | Solo se tocan (antes) | Jueves 08:00–10:00 | Aceptado | Aceptado | ✅ |
 | DIS-08 | Otro día | Viernes 10:00–12:00 | Aceptado | Aceptado en otro día | ✅ |
 | DIS-09 | Editar sin cambiar horas | Editar el lugar del bloque jueves 10:00–12:00 | Se guarda; no choca consigo mismo | Se edita el lugar sin chocar consigo mismo | ✅ |
@@ -178,11 +179,10 @@ Cosas que no son fallas (el caso pasa), pero conviene considerar para las siguie
 | IDX-06 / IDX-07 | El 404 solo aparece al abrir un enlace con un id inválido; el buscador del inicio nunca lleva ahí porque filtra las tarjetas en la misma página | Comportamiento correcto: el 404 protege contra enlaces viejos o modificados a mano |
 | REG-12 | Se dudaba si el admin podía registrar cuentas con su sesión abierta | Confirmado: con sesión, `registro.php` manda al panel. Crear usuarios desde el admin no es de la revisión 1 |
 | SES-02 | En "Mi disponibilidad" el asesor no ve cuántos alumnos tendrá en cada bloque | Las sesiones agendadas son de la revisión 2; ahí conviene mostrar cuántas sesiones tiene cada bloque |
-| SES-01 / REG-01 | Los botones "Iniciar sesión" y "Crear cuenta" usan la clase `boton-principal`, que no existe en `app.css`, y se ven sin el estilo de los demás botones. No afecta el funcionamiento | Opcional: cambiarla por `boton boton-destacado` |
 | SES-04 / SES-05 | El login no dice si lo incorrecto es el correo o la contraseña | Es intencional por seguridad: si dijera "ese correo no existe", cualquiera podría averiguar qué correos tienen cuenta. Se recomienda dejarlo así |
 
 ## Bugs encontrados
 
 | Issue | Caso | Descripción | Responsable | Estado |
 |---|---|---|---|---|
-| B-01 (avisado a P2 por mensaje) | REG-09 | Los errores del registro usan la clase `error-campo`, que no existe en `app.css`; se ven en negro y el campo no se marca. Usar `<span class="mensaje-error">` y agregar `campo-error` al `<div class="campo">` con error | P2 (@oswaldo-castillo) | Pendiente: se corrige después de la revisión 1 |
+| B-01 (#31) | REG-09, SES-01, REG-01 | Los errores del registro usan la clase `error-campo`, que no existe en `app.css`; se ven en negro y el campo no se marca. Usar `<span class="mensaje-error">` y agregar `campo-error` al `<div class="campo">` con error. Los botones "Iniciar sesión" y "Crear cuenta" usan la clase `boton-principal`, que tampoco existe en `app.css`, y se ven sin el estilo de los demás botones. Usar `boton boton-destacado` | P2 (@oswaldo-castillo) | Abierto |
