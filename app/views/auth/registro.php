@@ -11,14 +11,17 @@ $valor = static function (string $campo) use ($valores): string {
 };
 $errorCampo = static function (string $campo) use ($errores): void {
     if (isset($errores[$campo]) && is_string($errores[$campo])) {
-        echo '<small class="error-campo" id="error-' . e($campo) . '" role="alert">'
-            . e($errores[$campo]) . '</small>';
+        echo '<span class="mensaje-error" id="error-' . e($campo) . '" role="alert">'
+            . e($errores[$campo]) . '</span>';
     }
 };
 $atributosError = static function (string $campo) use ($errores): string {
     return isset($errores[$campo])
         ? ' aria-invalid="true" aria-describedby="error-' . e($campo) . '"'
         : '';
+};
+$claseCampo = static function (string $campo) use ($errores): string {
+    return isset($errores[$campo]) ? 'campo campo-error' : 'campo';
 };
 $patronCorreo = '.+@' . preg_quote((string) DOMINIO_CORREO, '/');
 $rolElegido = in_array($valor('rol'), ['alumno', 'asesor'], true) ? $valor('rol') : 'alumno';
@@ -34,21 +37,21 @@ $rolElegido = in_array($valor('rol'), ['alumno', 'asesor'], true) ? $valor('rol'
     <form method="post" action="<?= e(url('registro.php')) ?>" class="formulario" id="formulario-registro">
         <?php csrfCampo(); ?>
 
-        <div class="campo">
+        <div class="<?= $claseCampo('nombre') ?>">
             <label for="nombre">Nombre(s)</label>
             <input id="nombre" name="nombre" type="text" value="<?= e($valor('nombre')) ?>"
                 autocomplete="given-name" maxlength="<?= Usuario::LONGITUD_MAXIMA_NOMBRE ?>" required<?= $atributosError('nombre') ?>>
             <?php $errorCampo('nombre'); ?>
         </div>
 
-        <div class="campo">
+        <div class="<?= $claseCampo('apellidos') ?>">
             <label for="apellidos">Apellidos</label>
             <input id="apellidos" name="apellidos" type="text" value="<?= e($valor('apellidos')) ?>"
                 autocomplete="family-name" maxlength="<?= Usuario::LONGITUD_MAXIMA_APELLIDOS ?>" required<?= $atributosError('apellidos') ?>>
             <?php $errorCampo('apellidos'); ?>
         </div>
 
-        <div class="campo">
+        <div class="<?= $claseCampo('correo') ?>">
             <label for="correo">Correo institucional</label>
             <input id="correo" name="correo" type="email" value="<?= e($valor('correo')) ?>"
                 autocomplete="email" maxlength="<?= Usuario::LONGITUD_MAXIMA_CORREO ?>" pattern="<?= e($patronCorreo) ?>" required
@@ -57,7 +60,7 @@ $rolElegido = in_array($valor('rol'), ['alumno', 'asesor'], true) ? $valor('rol'
             <?php $errorCampo('correo'); ?>
         </div>
 
-        <div class="campo">
+        <div class="<?= $claseCampo('matricula') ?>">
             <label for="matricula">Matrícula</label>
             <input id="matricula" name="matricula" type="text" value="<?= e($valor('matricula')) ?>"
                 inputmode="numeric" autocomplete="off"
@@ -67,7 +70,7 @@ $rolElegido = in_array($valor('rol'), ['alumno', 'asesor'], true) ? $valor('rol'
             <?php $errorCampo('matricula'); ?>
         </div>
 
-        <div class="campo">
+        <div class="<?= $claseCampo('licenciatura_id') ?>">
             <label for="licenciatura_id">Licenciatura</label>
             <select id="licenciatura_id" name="licenciatura_id" required<?= $atributosError('licenciatura_id') ?>>
                 <option value="">Selecciona tu licenciatura</option>
@@ -79,12 +82,12 @@ $rolElegido = in_array($valor('rol'), ['alumno', 'asesor'], true) ? $valor('rol'
                 <?php endforeach; ?>
             </select>
             <?php if ($licenciaturas === []): ?>
-                <small class="error-campo">No hay licenciaturas disponibles. Inténtalo más tarde.</small>
+                <span class="mensaje-error">No hay licenciaturas disponibles. Inténtalo más tarde.</span>
             <?php endif; ?>
             <?php $errorCampo('licenciatura_id'); ?>
         </div>
 
-        <div class="campo">
+        <div class="<?= $claseCampo('semestre') ?>">
             <label for="semestre">Semestre</label>
             <select id="semestre" name="semestre" required<?= $atributosError('semestre') ?>>
                 <option value="">Selecciona tu semestre</option>
@@ -97,7 +100,7 @@ $rolElegido = in_array($valor('rol'), ['alumno', 'asesor'], true) ? $valor('rol'
             <?php $errorCampo('semestre'); ?>
         </div>
 
-        <div class="campo">
+        <div class="<?= $claseCampo('rol') ?>">
             <label for="rol">Tipo de cuenta</label>
             <select id="rol" name="rol" required<?= $atributosError('rol') ?>>
                 <option value="alumno" <?= $rolElegido === 'alumno' ? 'selected' : '' ?>>Alumno</option>
@@ -106,7 +109,7 @@ $rolElegido = in_array($valor('rol'), ['alumno', 'asesor'], true) ? $valor('rol'
             <?php $errorCampo('rol'); ?>
         </div>
 
-        <div class="campo">
+        <div class="<?= $claseCampo('contrasena') ?>">
             <label for="contrasena">Contraseña</label>
             <input id="contrasena" name="contrasena" type="password" autocomplete="new-password"
                 minlength="<?= Usuario::LONGITUD_MINIMA_CONTRASENA ?>" required<?= $atributosError('contrasena') ?>>
@@ -114,7 +117,7 @@ $rolElegido = in_array($valor('rol'), ['alumno', 'asesor'], true) ? $valor('rol'
             <?php $errorCampo('contrasena'); ?>
         </div>
 
-        <div class="campo">
+        <div class="<?= $claseCampo('confirmar_contrasena') ?>">
             <label for="confirmar_contrasena">Confirmar contraseña</label>
             <input id="confirmar_contrasena" name="confirmar_contrasena" type="password"
                 autocomplete="new-password" minlength="<?= Usuario::LONGITUD_MINIMA_CONTRASENA ?>"
@@ -122,7 +125,7 @@ $rolElegido = in_array($valor('rol'), ['alumno', 'asesor'], true) ? $valor('rol'
             <?php $errorCampo('confirmar_contrasena'); ?>
         </div>
 
-        <button class="boton boton-principal" type="submit">Crear cuenta</button>
+        <button class="boton boton-destacado" type="submit">Crear cuenta</button>
     </form>
 
     <p>¿Ya tienes una cuenta? <a href="<?= e(url('login.php')) ?>">Inicia sesión</a>.</p>
