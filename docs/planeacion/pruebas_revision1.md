@@ -185,4 +185,4 @@ Cosas que no son fallas (el caso pasa), pero conviene considerar para las siguie
 
 | Issue | Caso | Descripción | Responsable | Estado |
 |---|---|---|---|---|
-| B-01 (#31) | REG-09, SES-01, REG-01 | Los errores del registro usan la clase `error-campo`, que no existe en `app.css`; se ven en negro y el campo no se marca. Usar `<span class="mensaje-error">` y agregar `campo-error` al `<div class="campo">` con error. Los botones "Iniciar sesión" y "Crear cuenta" usan la clase `boton-principal`, que tampoco existe en `app.css`, y se ven sin el estilo de los demás botones. Usar `boton boton-destacado` | P2 (@oswaldo-castillo) | Abierto |
+| B-01 (#31) | REG-09, SES-01, REG-01 | Los errores del registro usan la clase `error-campo`, que no existe en `app.css`; se ven en negro y el campo no se marca. Usar `<span class="mensaje-error">` y agregar `campo-error` al `<div class="campo">` con error. Los botones "Iniciar sesión" y "Crear cuenta" usan la clase `boton-principal`, que tampoco existe en `app.css`, y se ven sin el estilo de los demás botones. Usar `boton boton-destacado` | P2 (@oswaldo-castillo) | Corregido |
