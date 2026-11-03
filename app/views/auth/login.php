@@ -43,7 +43,7 @@ $error = isset($error) && is_string($error) ? $error : '';
             >
         </div>
 
-        <button class="boton boton-principal" type="submit">Iniciar sesión</button>
+        <button class="boton boton-destacado" type="submit">Iniciar sesión</button>
     </form>
 
     <p>¿Todavía no tienes cuenta? <a href="<?= e(url('registro.php')) ?>">Regístrate aquí</a>.</p>
