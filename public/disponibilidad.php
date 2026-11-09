@@ -9,7 +9,6 @@
 declare(strict_types=1);
 
 require __DIR__ . '/../app/includes/bootstrap.php';
-require __DIR__ . '/../app/includes/horario.php';
 
 // Solo los asesores entran: el visitante va al login y los demás roles reciben 403
 requiereRol('asesor');
@@ -25,29 +24,6 @@ const BLOQUE_NUEVO = [
     'hora_fin' => '',
     'lugar' => '',
 ];
-
-/**
- * Lee un campo de texto del POST. Un arreglo (HTML modificado) cuenta como vacío.
- *
- * @param string $campo Nombre del campo.
- * @return string Valor sin espacios a los lados, o '' si no llegó.
- */
-function textoPost(string $campo): string
-{
-    $valor = $_POST[$campo] ?? '';
-    return is_string($valor) ? trim($valor) : '';
-}
-
-/**
- * Lee un campo entero del POST.
- *
- * @param string $campo Nombre del campo.
- * @return int El entero, o 0 si no llegó o no es un entero válido.
- */
-function enteroPost(string $campo): int
-{
-    return (int) filter_var($_POST[$campo] ?? null, FILTER_VALIDATE_INT);
-}
 
 /**
  * Busca los bloques del mismo asesor y día que chocan con el bloque, de cualquier materia.
