@@ -122,3 +122,63 @@
         </article>
     </div>
 </section>
+
+<!-- ===== ISS-17 · Estilos de los flujos nuevos (P3) ===== -->
+
+<section class="seccion">
+    <h2>Estados de una sesión</h2>
+    <div class="acciones">
+        <span class="etiqueta etiqueta-pendiente">Pendiente</span>
+        <span class="etiqueta etiqueta-confirmada">Confirmada</span>
+        <span class="etiqueta etiqueta-completada">Completada</span>
+        <span class="etiqueta etiqueta-cancelada">Cancelada</span>
+    </div>
+</section>
+
+<section class="seccion">
+    <h2>Tabla semanal</h2>
+    <p class="texto-suave">Solo las celdas disponibles son botones. Cada estado lleva su texto, no solo su color.</p>
+    <div class="tabla-envoltura">
+        <table class="tabla-semanal">
+            <caption class="solo-lectores">Ejemplo de horarios de una semana</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Hora</th>
+                    <th scope="col">Lun 07/12</th>
+                    <th scope="col">Mar 08/12</th>
+                    <th scope="col">Mié 09/12</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">09:00</th>
+                    <td><span class="celda-reservado">Reservado</span></td>
+                    <td><span class="celda-sin-bloque">Sin bloque</span></td>
+                    <td><button class="celda-disponible" type="button">Disponible</button></td>
+                </tr>
+                <tr>
+                    <th scope="row">09:30</th>
+                    <td><button class="celda-disponible" type="button">Disponible</button></td>
+                    <td><span class="celda-sin-bloque">Sin bloque</span></td>
+                    <td><span class="celda-ocupado">Ocupado</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <ul class="leyenda" aria-label="Leyenda de la tabla">
+        <li><span class="celda-disponible">Disponible</span></li>
+        <li><span class="celda-reservado">Reservado</span></li>
+        <li><span class="celda-ocupado">Ocupado</span></li>
+        <li><span class="celda-sin-bloque">Sin bloque</span></li>
+    </ul>
+</section>
+
+<section class="seccion">
+    <h2>Calificación</h2>
+    <p class="calificacion">
+        <span class="solo-lectores">Calificación promedio:</span>
+        <span class="calificacion-estrella" aria-hidden="true">★</span>
+        <span class="calificacion-promedio">4.5</span>
+        <span>· 3 reseñas</span>
+    </p>
+</section>
