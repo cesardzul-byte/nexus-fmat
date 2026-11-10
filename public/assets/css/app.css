@@ -51,6 +51,13 @@
     --color-info: #1e40af;
     --color-info-fondo: #dbeafe;
 
+    /* Estados de sesiones y de la tabla semanal (cada texto contra su fondo supera 6:1) */
+    --color-aviso: #92400e;
+    --color-aviso-fondo: #fef3c7;
+    --color-neutro: #475569;
+    --color-neutro-fondo: #f1f5f9;
+    --color-estrella: #b45309;
+
     /* Tipografía */
     --fuente-base: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --tamano-base: 1rem;
@@ -87,6 +94,7 @@
     --ancho-tarjeta-min: 16rem;
     --ancho-menu-movil: 13rem;
     --ancho-muestra-color: 7rem;
+    --ancho-tabla-semanal: 40rem;
     --desplazamiento-foco: 2px;
     --duracion-transicion: 120ms;
 }
@@ -748,4 +756,128 @@ a {
 /* Separa la tabla de un día del título del día siguiente */
 .dia-disponibilidad {
     margin-bottom: var(--espacio-lg);
+}
+
+/* ===== 15. ISS-17 · Estilos de los flujos nuevos (P3) ===== */
+
+/* Etiquetas de estado de una sesión: el color acompaña al texto, nunca lo reemplaza */
+.etiqueta-pendiente {
+    color: var(--color-aviso);
+    background-color: var(--color-aviso-fondo);
+}
+
+.etiqueta-confirmada {
+    color: var(--color-info);
+    background-color: var(--color-info-fondo);
+}
+
+.etiqueta-completada {
+    color: var(--color-exito);
+    background-color: var(--color-exito-fondo);
+}
+
+.etiqueta-cancelada {
+    color: var(--color-neutro);
+    background-color: var(--color-neutro-fondo);
+    text-decoration: line-through;
+}
+
+/* Tabla semanal: una columna por día y una fila por cada media hora */
+.tabla-semanal {
+    width: 100%;
+    min-width: var(--ancho-tabla-semanal);
+    border-collapse: separate;
+    border-spacing: var(--espacio-xs);
+    background-color: var(--color-superficie);
+}
+
+.tabla-semanal th {
+    padding: var(--espacio-xs);
+    font-size: var(--tamano-chico);
+    color: var(--color-tinta);
+    text-align: center;
+}
+
+.tabla-semanal td {
+    padding: 0;
+}
+
+/* Las cuatro celdas comparten tamaño; cada una dice su estado con texto */
+.celda-disponible,
+.celda-reservado,
+.celda-ocupado,
+.celda-sin-bloque {
+    display: block;
+    width: 100%;
+    padding: var(--espacio-xs);
+    font: inherit;
+    font-size: var(--tamano-chico);
+    font-weight: var(--peso-fuerte);
+    text-align: center;
+    border: var(--grosor-borde) solid transparent;
+    border-radius: var(--radio-chico);
+}
+
+/* Solo la disponible es un <button>: se puede elegir con clic o con teclado */
+.celda-disponible {
+    color: var(--color-exito);
+    background-color: var(--color-exito-fondo);
+    border-color: var(--color-exito);
+    cursor: pointer;
+}
+
+.celda-disponible:hover {
+    color: var(--color-superficie);
+    background-color: var(--color-exito);
+}
+
+.celda-reservado {
+    color: var(--color-aviso);
+    background-color: var(--color-aviso-fondo);
+}
+
+.celda-ocupado {
+    color: var(--color-error);
+    background-color: var(--color-error-fondo);
+}
+
+.celda-sin-bloque {
+    color: var(--color-neutro);
+    background-color: var(--color-neutro-fondo);
+}
+
+/* Leyenda de los cuatro estados, debajo de la tabla */
+.leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espacio-sm);
+    margin: var(--espacio-sm) 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.leyenda .celda-disponible,
+.leyenda .celda-reservado,
+.leyenda .celda-ocupado,
+.leyenda .celda-sin-bloque {
+    width: auto;
+    padding: var(--espacio-xs) var(--espacio-sm);
+    cursor: default;
+}
+
+/* Calificación del asesor, por ejemplo "★ 4.5 · 3 reseñas" */
+.calificacion {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espacio-xs);
+    font-weight: var(--peso-fuerte);
+    color: var(--color-texto-suave);
+}
+
+.calificacion-estrella {
+    color: var(--color-estrella);
+}
+
+.calificacion-promedio {
+    color: var(--color-texto);
 }
