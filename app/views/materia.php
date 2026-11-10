@@ -6,6 +6,7 @@
  * - $materia (array): id, clave y nombre de la materia.
  * - $asesores (array): asesores con nombre, apellidos, licenciatura y bloques;
  *   cada bloque ya trae 'dia', 'horario' y 'lugar' listos para mostrar.
+ * - $usuario (array|null): usuario en sesión, o null si es un visitante (ISS-18).
  */
 ?>
 <p><a class="enlace-volver" href="<?= e(url()) ?>">← Todas las materias</a></p>
@@ -51,6 +52,13 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <?php /* ISS-18: solo el alumno agenda; asesores y administradores no ven botón */ ?>
+                    <?php if ($usuario === null): ?>
+                        <a class="boton boton-secundario" href="<?= e(url('login.php')) ?>">Inicia sesión para agendar</a>
+                    <?php elseif ($usuario['rol'] === 'alumno'): ?>
+                        <a class="boton" href="<?= e(url('agendar.php?materia=' . $materia['id'] . '&asesor=' . $asesor['id'])) ?>">Agendar</a>
+                    <?php endif; ?>
                 <?php endif; ?>
             </article>
         <?php endforeach; ?>
