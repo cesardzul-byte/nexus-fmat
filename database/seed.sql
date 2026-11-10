@@ -46,3 +46,26 @@ INSERT INTO disponibilidad (asesor_id,materia_id,dia_semana, hora_inicio, hora_f
   (4, 5, 5, '08:00:00', '10:00:00', 'Aula 301'),
   (4, 1, 1, '13:00:00', '15:00:00', 'Aula 302'),
   (4, 6, 3, '11:00:00', '13:00:00', 'Aula 303');
+
+
+-- ====== ISS 16 Datos demo de sesiones y reseñas ======
+
+-- Fechas fijas (supuesto 8): pasadas en octubre y futuras en diciembre 2026.
+-- Cada sesión cae dentro de un bloque de 'disponibilidad' del mismo asesor correspondiente  y materia.
+-- Los IDs de las sesiones salen en el orden del INSERT (1-8) porque schema.sql recrea la base. 
+
+INSERT INTO sesiones (alumno_id, asesor_id, materia_id, fecha, hora_inicio, hora_fin, tema, estado) VALUES
+  (5, 2, 1, '2026-10-19', '09:00:00', '10:00:00', 'Límites y continuidad', 'completada'),            -- 1: con reseña de 5
+  (6, 3, 3, '2026-10-20', '10:00:00', '11:00:00', 'Inducción matemática', 'completada'),             -- 2: con reseña de 4
+  (7, 4, 5, '2026-10-23', '08:00:00', '09:00:00', 'Ciclos y arreglos en C', 'completada'),           -- 3: con reseña de 3 sin comentario
+  (5, 4, 1, '2026-10-26', '13:00:00', '14:00:00', 'Regla de la cadena', 'completada'),               -- 4: sin reseña, se califica en la demo
+  (6, 2, 1, '2026-10-26', '09:00:00', '10:00:00', 'Derivadas implícitas', 'cancelada'),              -- 5: historial
+  (5, 2, 2, '2026-10-28', '14:00:00', '15:00:00', 'Integración por partes', 'confirmada'),           -- 6: ya pasó, se completa en la demo
+  (5, 2, 1, '2026-12-07', '09:00:00', '10:00:00', 'Repaso para el ordinario', 'pendiente'),          -- 7: se confirma en la demo
+  (6, 4, 6, '2026-12-09', '11:00:00', '12:00:00', 'Herencia y polimorfismo', 'confirmada');          -- 8: "Ocupado" en la tabla
+
+INSERT INTO resenas (sesion_id, calificacion, comentario) VALUES
+  (1, 5, 'Excelente asesoría, muy clara y útil.'),
+  (2, 4, 'Buena explicación, pero podría mejorar la claridad en algunos puntos.'),
+  (3, 3, NULL); -- Sin comentario
+  
