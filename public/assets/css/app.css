@@ -881,3 +881,15 @@ a {
 .calificacion-promedio {
     color: var(--color-texto);
 }
+
+/* ===== 16. ISS-22 · Administración de materias (P3) ===== */
+
+/* Separa la sección de accesos del resumen de números en el panel del administrador */
+.titulo-administracion {
+    margin-top: var(--espacio-xl);
+}
+
+/* Los formularios de una fila de tabla (Desactivar / Activar) no agregan margen */
+.tabla .acciones form {
+    margin: 0;
+}

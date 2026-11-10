@@ -58,4 +58,13 @@
             <p class="estadistica-etiqueta">Materias activas</p>
         </article>
     </div>
+
+    <h2 class="titulo-administracion">Administración</h2>
+    <div class="rejilla-tarjetas">
+        <article class="tarjeta">
+            <h3 class="tarjeta-titulo">Materias</h3>
+            <p class="texto-suave">Crea, edita, desactiva y vuelve a activar las materias del catálogo.</p>
+            <a class="boton boton-destacado" href="<?= e(url('admin_materias.php')) ?>">Administrar materias</a>
+        </article>
+    </div>
 <?php endif; ?>
