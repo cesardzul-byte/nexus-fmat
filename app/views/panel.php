@@ -22,6 +22,12 @@
             <p class="texto-suave">Revisa qué asesores dan la materia que necesitas y sus horarios.</p>
             <a class="boton boton-destacado" href="<?= e(url()) ?>">Buscar materia</a>
         </article>
+        <!-- ===== ISS-19 · Acceso a mis sesiones (P2) ===== -->
+        <article class="tarjeta">
+            <h2 class="tarjeta-titulo">Mis sesiones</h2>
+            <p class="texto-suave">Consulta tus próximas asesorías y revisa tu historial.</p>
+            <a class="boton boton-secundario" href="<?= e(url('mis_sesiones.php')) ?>">Ver mis sesiones</a>
+        </article>
     </div>
 
 <?php elseif ($usuario['rol'] === 'asesor'): ?>
@@ -35,6 +41,12 @@
             <h2 class="tarjeta-titulo">Mi disponibilidad</h2>
             <p class="texto-suave">Publica los días y horas en que puedes dar asesoría.</p>
             <a class="boton boton-destacado" href="<?= e(url('disponibilidad.php')) ?>">Ver mi disponibilidad</a>
+        </article>
+        <!-- ===== ISS-19 · Acceso a solicitudes y sesiones (P2) ===== -->
+        <article class="tarjeta">
+            <h2 class="tarjeta-titulo">Solicitudes y sesiones</h2>
+            <p class="texto-suave">Confirma solicitudes, administra tus asesorías y consulta el historial.</p>
+            <a class="boton boton-secundario" href="<?= e(url('mis_sesiones.php')) ?>">Ver solicitudes y sesiones</a>
         </article>
     </div>
 
