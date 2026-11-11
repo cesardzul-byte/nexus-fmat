@@ -165,6 +165,145 @@ class Sesion
         return $mensajes;
     }
 
+    // ===== ISS-19 · Mis sesiones y cambios de estado (P2) =====
+
+    /**
+     * Transiciones permitidas según el rol y el estado actual de la sesión.
+     * Los estados completada y cancelada son finales: no aparecen como origen.
+     */
+    public const TRANSICIONES = [
+        'alumno' => [
+            'pendiente' => ['cancelada'],
+            'confirmada' => ['cancelada'],
+        ],
+        'asesor' => [
+            'pendiente' => ['confirmada', 'cancelada'],
+            'confirmada' => ['cancelada', 'completada'],
+        ],
+    ];
+
+    /**
+     * Indica si un rol puede cambiar una sesión de un estado a otro.
+     * Es una regla pura: no consulta la base de datos ni la sesión de PHP.
+     *
+     * @param string $rol Rol de quien solicita el cambio.
+     * @param string $estadoActual Estado que tiene la sesión.
+     * @param string $estadoNuevo Estado solicitado.
+     * @return bool true cuando la transición está permitida.
+     */
+    public static function transicionPermitida(string $rol, string $estadoActual, string $estadoNuevo): bool
+    {
+        $estadosPermitidos = self::TRANSICIONES[$rol][$estadoActual] ?? [];
+        return in_array($estadoNuevo, $estadosPermitidos, true);
+    }
+
+    /**
+     * Devuelve todas las sesiones de un alumno o asesor, con materia, contraparte,
+     * reseña y lugar actual del bloque de disponibilidad que cubre la sesión.
+     *
+     * Si el asesor eliminó o modificó el bloque original, el LEFT JOIN conserva
+     * la sesión y deja lugar en null para que la vista muestre "Por acordar".
+     *
+     * @param int $usuarioId Id del usuario autenticado.
+     * @param string $rol Rol autenticado: alumno o asesor.
+     * @return array<int, array<string, mixed>> Sesiones ordenadas por fecha y hora.
+     */
+    public static function deUsuario(int $usuarioId, string $rol): array
+    {
+        if ($usuarioId < 1 || !in_array($rol, ['alumno', 'asesor'], true)) {
+            return [];
+        }
+
+        // Estos identificadores salen de una lista cerrada; nunca se toman del POST ni del GET.
+        $columnaUsuario = $rol === 'alumno' ? 's.alumno_id' : 's.asesor_id';
+        $columnaOtraPersona = $rol === 'alumno' ? 's.asesor_id' : 's.alumno_id';
+
+        $stmt = db()->prepare(
+            'SELECT s.id, s.alumno_id, s.asesor_id, s.materia_id,
+                    s.fecha, s.hora_inicio, s.hora_fin, s.tema, s.estado,
+                    m.nombre AS materia,
+                    CONCAT(otra.nombre, \' \', otra.apellidos) AS otra_persona,
+                    r.calificacion, r.comentario,
+                    d.lugar
+               FROM sesiones s
+               INNER JOIN materias m ON m.id = s.materia_id
+               INNER JOIN usuarios otra ON otra.id = ' . $columnaOtraPersona . '
+               LEFT JOIN resenas r ON r.sesion_id = s.id
+               LEFT JOIN disponibilidad d ON d.asesor_id = s.asesor_id
+                                         AND d.materia_id = s.materia_id
+                                         AND d.dia_semana = WEEKDAY(s.fecha) + 1
+                                         AND d.hora_inicio <= s.hora_inicio
+                                         AND d.hora_fin >= s.hora_fin
+              WHERE ' . $columnaUsuario . ' = :usuario_id
+              ORDER BY s.fecha ASC, s.hora_inicio ASC'
+        );
+        $stmt->execute(['usuario_id' => $usuarioId]);
+
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Cambia el estado si la transición está permitida y la sesión pertenece al usuario.
+     * El estado actual se incluye en el WHERE para evitar que dos pestañas apliquen
+     * dos veces el mismo cambio. Completar también exige que ya haya pasado la hora fin.
+     *
+     * @param int $id Id de la sesión.
+     * @param int $usuarioId Id del usuario autenticado.
+     * @param string $rol Rol autenticado: alumno o asesor.
+     * @param string $estadoActual Estado que la página leyó de la base de datos.
+     * @param string $estadoNuevo Estado solicitado.
+     * @return bool true si el UPDATE modificó exactamente una sesión.
+     */
+    public static function cambiarEstado(
+        int $id,
+        int $usuarioId,
+        string $rol,
+        string $estadoActual,
+        string $estadoNuevo
+    ): bool {
+        if (
+            $id < 1
+            || $usuarioId < 1
+            || !self::transicionPermitida($rol, $estadoActual, $estadoNuevo)
+        ) {
+            return false;
+        }
+
+        // La columna de pertenencia se selecciona únicamente entre estos dos valores fijos.
+        $columnaParticipante = match ($rol) {
+            'alumno' => 'alumno_id',
+            'asesor' => 'asesor_id',
+            default => null,
+        };
+        if ($columnaParticipante === null) {
+            return false;
+        }
+
+        $sql = 'UPDATE sesiones
+                   SET estado = :estado_nuevo
+                 WHERE id = :id
+                   AND ' . $columnaParticipante . ' = :usuario_id
+                   AND estado = :estado_actual';
+        $parametros = [
+            'estado_nuevo' => $estadoNuevo,
+            'id' => $id,
+            'usuario_id' => $usuarioId,
+            'estado_actual' => $estadoActual,
+        ];
+
+        if ($estadoNuevo === 'completada') {
+            // bootstrap.php configura America/Merida para que PHP y la aplicación usen la misma hora local.
+            $ahora = new DateTimeImmutable('now', new DateTimeZone('America/Merida'));
+            $sql .= ' AND TIMESTAMP(fecha, hora_fin) <= :ahora';
+            $parametros['ahora'] = $ahora->format('Y-m-d H:i:s');
+        }
+
+        $stmt = db()->prepare($sql);
+        $stmt->execute($parametros);
+
+        return $stmt->rowCount() === 1;
+    }
+
     // ===== ISS-20 · API de horarios (P4) =====
 
     /**

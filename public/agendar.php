@@ -46,8 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($errores === []) {
         flash('exito', 'Sesión solicitada. Queda pendiente hasta que el asesor la confirme.');
-        // ISS-19 cambia este destino a mis_sesiones.php
-        redirigir('panel.php');
+        // ===== ISS-19 · Después de agendar, consultar Mis sesiones (P2) =====
+        redirigir('mis_sesiones.php');
     }
     // Con errores no se redirige: el formulario se vuelve a mostrar con lo que escribió el alumno
 }
