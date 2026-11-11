@@ -164,4 +164,32 @@ class Sesion
         }
         return $mensajes;
     }
+
+    // ===== ISS-20 · API de horarios (P4) =====
+
+    /**
+     * Devuelve las sesiones del asesor que reservan el horario (RN-06) entre dos fechas, de cualquier materia.
+     *
+     * Solo trae fecha, horas y estado: la API de horarios no debe exponer alumnos ni temas.
+     *
+     * @param int $asesorId Id del asesor.
+     * @param string $desde Primera fecha en 'AAAA-MM-DD', incluida.
+     * @param string $hasta Última fecha en 'AAAA-MM-DD', incluida.
+     * @return array<int, array{fecha: string, hora_inicio: string, hora_fin: string, estado: string}> Ordenadas por fecha y hora.
+     */
+    public static function deAsesorEntre(int $asesorId, string $desde, string $hasta): array
+    {
+        // Un marcador por estado, para que la lista salga de ESTADOS_QUE_RESERVAN y no se repita aquí
+        $marcadores = implode(', ', array_fill(0, count(self::ESTADOS_QUE_RESERVAN), '?'));
+        $stmt = db()->prepare(
+            "SELECT fecha, hora_inicio, hora_fin, estado
+               FROM sesiones
+              WHERE asesor_id = ?
+                AND fecha BETWEEN ? AND ?
+                AND estado IN ($marcadores)
+              ORDER BY fecha, hora_inicio"
+        );
+        $stmt->execute([$asesorId, $desde, $hasta, ...self::ESTADOS_QUE_RESERVAN]);
+        return $stmt->fetchAll();
+    }
 }

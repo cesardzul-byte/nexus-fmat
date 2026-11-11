@@ -122,4 +122,29 @@ foreach ($fechasInvalidas as $caso => [$fecha, $inicio]) {
     assert(errorDeFecha($fecha, $inicio, $ahora) !== null, $caso);
 }
 
+// ----- estadoIntervalo(): el bloque de Luis (lunes 09:00–11:00) con una sesión pendiente y una confirmada -----
+
+$sesionesLuis = [
+    ['hora_inicio' => '09:00:00', 'hora_fin' => '10:00:00', 'estado' => 'pendiente'],
+    ['hora_inicio' => '10:30:00', 'hora_fin' => '11:00:00', 'estado' => 'confirmada'],
+];
+$sesionCancelada = [['hora_inicio' => '09:00:00', 'hora_fin' => '10:00:00', 'estado' => 'cancelada']];
+
+// nombre del caso => [inicio, fin, bloques, sesiones, estado esperado]
+$casosEstado = [
+    'libre dentro del bloque (10:00–10:30), solo toca las dos sesiones' => ['10:00', '10:30', $bloqueLuis, $sesionesLuis, 'disponible'],
+    'inicio de la sesión pendiente (09:00–09:30)' => ['09:00', '09:30', $bloqueLuis, $sesionesLuis, 'reservado'],
+    'final de la sesión pendiente (09:30–10:00)' => ['09:30', '10:00', $bloqueLuis, $sesionesLuis, 'reservado'],
+    'con la sesión confirmada (10:30–11:00)' => ['10:30', '11:00', $bloqueLuis, $sesionesLuis, 'ocupado'],
+    'toca las dos sesiones: gana la confirmada (09:30–11:00)' => ['09:30', '11:00', $bloqueLuis, $sesionesLuis, 'ocupado'],
+    'una sesión cancelada no reserva (09:00–09:30)' => ['09:00', '09:30', $bloqueLuis, $sesionCancelada, 'disponible'],
+    'antes del bloque (08:30–09:00)' => ['08:30', '09:00', $bloqueLuis, $sesionesLuis, 'sin_bloque'],
+    'después del bloque (11:00–11:30)' => ['11:00', '11:30', $bloqueLuis, [], 'sin_bloque'],
+    'sin bloques ese día, aunque haya sesiones (09:00–09:30)' => ['09:00', '09:30', [], $sesionesLuis, 'sin_bloque'],
+    'en el segundo de dos bloques contiguos (11:00–11:30)' => ['11:00', '11:30', $bloquesContiguos, [], 'disponible'],
+];
+foreach ($casosEstado as $caso => [$inicio, $fin, $bloques, $sesiones, $esperado]) {
+    assert(estadoIntervalo($inicio, $fin, $bloques, $sesiones) === $esperado, $caso);
+}
+
 echo "OK: horario_check pasó todos los casos.\n";

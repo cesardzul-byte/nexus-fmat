@@ -1,7 +1,8 @@
 <?php
 /**
  * Reglas de horario: qué bloque es válido (RN-03), cuándo dos intervalos se empalman (RN-04),
- * si una sesión cabe en un bloque (RN-05) y si su fecha se puede agendar.
+ * si una sesión cabe en un bloque (RN-05), si su fecha se puede agendar y qué estado muestra
+ * un intervalo en la tabla semanal (RF-05).
  *
  * Son funciones puras, sin BD ni sesión: las prueba tests/horario_check.php y las
  * reutilizan las sesiones de la revisión 2. Las horas se comparan como texto 'HH:MM',
@@ -145,4 +146,41 @@ function errorDeFecha(string $fecha, string $inicio, DateTimeImmutable $ahora): 
         return 'Esa fecha y hora ya pasaron.';
     }
     return null;
+}
+
+// ===== ISS-20 · API de horarios (P4) =====
+
+/**
+ * Decide el estado de un intervalo de la tabla semanal (RF-05).
+ *
+ * Fuera de los bloques de la materia es 'sin_bloque', aunque haya sesiones. Dentro, una sesión
+ * confirmada que lo toque lo deja 'ocupado' y gana sobre una pendiente, que lo deja 'reservado'.
+ * Las sesiones canceladas o completadas no cuentan (RN-06). Que el intervalo ya haya pasado lo
+ * revisa quien la llama con errorDeFecha().
+ *
+ * @param string $inicio Inicio del intervalo en 'HH:MM' o 'HH:MM:SS'.
+ * @param string $fin Fin del intervalo en 'HH:MM' o 'HH:MM:SS'.
+ * @param array<int, array{hora_inicio: string, hora_fin: string}> $bloques Bloques del asesor en esa materia y día.
+ * @param array<int, array{hora_inicio: string, hora_fin: string, estado: string}> $sesiones Sesiones del asesor en esa fecha, de cualquier materia.
+ * @return string 'disponible', 'reservado', 'ocupado' o 'sin_bloque'.
+ */
+function estadoIntervalo(string $inicio, string $fin, array $bloques, array $sesiones): string
+{
+    if (!dentroDeBloque($inicio, $fin, $bloques)) {
+        return 'sin_bloque';
+    }
+
+    $estado = 'disponible';
+    foreach ($sesiones as $sesion) {
+        if (!seEmpalman($inicio, $fin, $sesion['hora_inicio'], $sesion['hora_fin'])) {
+            continue;
+        }
+        if ($sesion['estado'] === 'confirmada') {
+            return 'ocupado';
+        }
+        if ($sesion['estado'] === 'pendiente') {
+            $estado = 'reservado';
+        }
+    }
+    return $estado;
 }

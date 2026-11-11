@@ -892,4 +892,18 @@ a {
 /* Los formularios de una fila de tabla (Desactivar / Activar) no agregan margen */
 .tabla .acciones form {
     margin: 0;
+/* ===== 17. ISS-21 · Tabla semanal de horarios (P3) ===== */
+
+/* Botones de semana anterior y siguiente, con la semana que se ve en medio */
+.navegacion-semana {
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--espacio-md);
 }
+
+.titulo-semana {
+    margin: 0;
+    font-weight: var(--peso-fuerte);
+    color: var(--color-tinta);
+}
+
