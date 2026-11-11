@@ -1,6 +1,7 @@
 <?php
 /**
- * Reglas de horario: qué bloque es válido (RN-03) y cuándo dos intervalos se empalman (RN-04).
+ * Reglas de horario: qué bloque es válido (RN-03), cuándo dos intervalos se empalman (RN-04),
+ * si una sesión cabe en un bloque (RN-05) y si su fecha se puede agendar.
  *
  * Son funciones puras, sin BD ni sesión: las prueba tests/horario_check.php y las
  * reutilizan las sesiones de la revisión 2. Las horas se comparan como texto 'HH:MM',
@@ -93,4 +94,55 @@ function validarBloque(int $dia, string $inicio, string $fin): array
     }
 
     return $errores;
+}
+
+// ===== ISS-18 · Agendar una sesión (P4) =====
+
+/**
+ * Indica si un intervalo cabe completo dentro de alguno de los bloques (RN-05).
+ *
+ * Tiene que caber en un solo bloque: con 09:00–11:00 y 11:00–13:00, la sesión
+ * 10:00–12:00 no se acepta aunque entre los dos la cubran.
+ *
+ * @param string $inicio Inicio de la sesión en 'HH:MM' o 'HH:MM:SS'.
+ * @param string $fin Fin de la sesión en 'HH:MM' o 'HH:MM:SS'.
+ * @param array<int, array{hora_inicio: string, hora_fin: string}> $bloques Bloques del asesor en esa materia y día.
+ * @return bool true si inicio ≥ inicio del bloque y fin ≤ fin del bloque en alguno de ellos.
+ */
+function dentroDeBloque(string $inicio, string $fin, array $bloques): bool
+{
+    foreach ($bloques as $bloque) {
+        if (
+            normalizarHora($inicio) >= normalizarHora($bloque['hora_inicio'])
+            && normalizarHora($fin) <= normalizarHora($bloque['hora_fin'])
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Revisa que la fecha de una sesión exista, no sea domingo y no haya pasado.
+ *
+ * @param string $fecha Fecha en 'AAAA-MM-DD', como la envía <input type="date">.
+ * @param string $inicio Hora de inicio en 'HH:MM'; con la fecha de hoy decide si ya pasó.
+ * @param DateTimeImmutable $ahora Momento actual; se recibe para poder probarla con una hora fija.
+ * @return string|null Mensaje de error, o null si la fecha se puede agendar.
+ */
+function errorDeFecha(string $fecha, string $inicio, DateTimeImmutable $ahora): ?string
+{
+    // PHP "corrige" 2026-02-30 a 2026-03-02; volver a darle formato y comparar lo detecta
+    $dia = DateTimeImmutable::createFromFormat('!Y-m-d', $fecha);
+    if ($dia === false || $dia->format('Y-m-d') !== $fecha) {
+        return 'Elige una fecha válida.';
+    }
+    if (!isset(DIAS_SEMANA[(int) $dia->format('N')])) {
+        return 'No hay asesorías en domingo. Elige un día de lunes a sábado.';
+    }
+    // 'AAAA-MM-DD HH:MM' ordena como texto igual que en el tiempo. Una sesión que empieza este minuto ya pasó
+    if ($fecha . ' ' . normalizarHora($inicio) <= $ahora->format('Y-m-d H:i')) {
+        return 'Esa fecha y hora ya pasaron.';
+    }
+    return null;
 }
