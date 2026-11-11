@@ -881,3 +881,18 @@ a {
 .calificacion-promedio {
     color: var(--color-texto);
 }
+
+/* ===== 17. ISS-21 · Tabla semanal de horarios (P3) ===== */
+
+/* Botones de semana anterior y siguiente, con la semana que se ve en medio */
+.navegacion-semana {
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--espacio-md);
+}
+
+.titulo-semana {
+    margin: 0;
+    font-weight: var(--peso-fuerte);
+    color: var(--color-tinta);
+}

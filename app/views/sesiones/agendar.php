@@ -94,3 +94,35 @@ $nombreAsesor = $asesor['nombre'] . ' ' . $asesor['apellidos'];
         </form>
     </section>
 <?php endif; ?>
+
+<?php // ===== ISS-21 · Tabla semanal de horarios (P3) ===== ?>
+<?php if ($bloques !== []): ?>
+    <?php
+    // La sección empieza oculta: app.js la muestra. Sin JavaScript solo se usa el formulario de arriba
+    ?>
+    <section class="seccion" id="tabla-horarios" data-tabla-horarios
+        data-asesor="<?= e($asesor['id']) ?>" data-materia="<?= e($materia['id']) ?>"
+        data-api="<?= e(url('api/horarios.php')) ?>" hidden>
+        <h2>Elige un horario</h2>
+        <p class="texto-suave">Toca un horario disponible para llenar la fecha y la hora de tu solicitud.</p>
+
+        <div class="acciones navegacion-semana">
+            <button class="boton boton-secundario" type="button" data-semana-anterior>← Semana anterior</button>
+            <p class="titulo-semana" data-titulo-semana aria-live="polite"></p>
+            <button class="boton boton-secundario" type="button" data-semana-siguiente>Semana siguiente →</button>
+        </div>
+
+        <div class="alerta alerta-error" role="alert" data-error-horarios hidden>
+            No se pudieron cargar los horarios. Puedes escribir la fecha y la hora en el formulario.
+        </div>
+
+        <div class="tabla-envoltura" data-contenedor-tabla></div>
+
+        <ul class="leyenda" aria-label="Leyenda de la tabla">
+            <li><span class="celda-disponible">Disponible</span></li>
+            <li><span class="celda-reservado">Reservado</span></li>
+            <li><span class="celda-ocupado">Ocupado</span></li>
+            <li><span class="celda-sin-bloque">Sin bloque</span></li>
+        </ul>
+    </section>
+<?php endif; ?>
