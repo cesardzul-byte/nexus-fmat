@@ -312,4 +312,153 @@ final class Usuario
 
         return $conteo;
     }
+
+    // ===== ISS-23 · Administración de usuarios (P2) =====
+
+    /**
+     * Devuelve las cuentas, opcionalmente filtradas por rol, sin incluir password_hash.
+     * Las cuentas de administrador también aparecen, pero son de solo lectura en el panel.
+     *
+     * @param string|null $rol Rol por el que se filtra: alumno, asesor o admin; null muestra todos.
+     * @return array<int, array<string, mixed>> Cuentas con los datos necesarios para administración.
+     */
+    public static function todos(?string $rol): array
+    {
+        if ($rol !== null && !in_array($rol, self::ROLES, true)) {
+            return [];
+        }
+
+        $sql = 'SELECT u.id, u.nombre, u.apellidos, u.correo, u.rol,
+                       u.matricula, u.licenciatura_id, l.nombre AS licenciatura,
+                       u.semestre, u.activo
+                  FROM usuarios u
+                  LEFT JOIN licenciaturas l ON l.id = u.licenciatura_id';
+        if ($rol !== null) {
+            $sql .= ' WHERE u.rol = :rol';
+        }
+        $sql .= " ORDER BY CASE u.rol
+                                WHEN 'alumno' THEN 1
+                                WHEN 'asesor' THEN 2
+                                ELSE 3
+                           END,
+                           u.apellidos, u.nombre";
+
+        $stmt = db()->prepare($sql);
+        $stmt->execute($rol === null ? [] : ['rol' => $rol]);
+
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Valida los campos editables de una cuenta. No recibe ni modifica rol, correo o matrícula.
+     *
+     * @param array<string, mixed> $datos Nombre, apellidos, licenciatura_id y semestre.
+     * @return array<string, string> Errores indexados por campo.
+     */
+    public static function erroresDatosAdministrables(array $datos): array
+    {
+        $errores = [];
+        $nombre = is_string($datos['nombre'] ?? null) ? trim($datos['nombre']) : '';
+        $apellidos = is_string($datos['apellidos'] ?? null) ? trim($datos['apellidos']) : '';
+
+        if ($nombre === '' || !mb_check_encoding($nombre, 'UTF-8')) {
+            $errores['nombre'] = 'El nombre es obligatorio.';
+        } elseif (self::longitudCaracteres($nombre) > self::LONGITUD_MAXIMA_NOMBRE) {
+            $errores['nombre'] = 'El nombre no puede superar ' . self::LONGITUD_MAXIMA_NOMBRE . ' caracteres.';
+        }
+
+        if ($apellidos === '' || !mb_check_encoding($apellidos, 'UTF-8')) {
+            $errores['apellidos'] = 'Los apellidos son obligatorios.';
+        } elseif (self::longitudCaracteres($apellidos) > self::LONGITUD_MAXIMA_APELLIDOS) {
+            $errores['apellidos'] = 'Los apellidos no pueden superar ' . self::LONGITUD_MAXIMA_APELLIDOS . ' caracteres.';
+        }
+
+        $licenciaturaId = filter_var(
+            $datos['licenciatura_id'] ?? null,
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1]]
+        );
+        if (!is_int($licenciaturaId)) {
+            $errores['licenciatura_id'] = 'Selecciona una licenciatura válida.';
+        } else {
+            $stmt = db()->prepare('SELECT 1 FROM licenciaturas WHERE id = :id LIMIT 1');
+            $stmt->execute(['id' => $licenciaturaId]);
+            if ($stmt->fetchColumn() === false) {
+                $errores['licenciatura_id'] = 'La licenciatura seleccionada no existe.';
+            }
+        }
+
+        $semestre = filter_var(
+            $datos['semestre'] ?? null,
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1, 'max_range' => self::SEMESTRE_MAXIMO]]
+        );
+        if (!is_int($semestre)) {
+            $errores['semestre'] = 'Selecciona un semestre del 1 al ' . self::SEMESTRE_MAXIMO . '.';
+        }
+
+        return $errores;
+    }
+
+    /**
+     * Actualiza únicamente los datos permitidos de un alumno o asesor.
+     * El rol, correo y matrícula no se reciben y la consulta excluye administradores.
+     *
+     * @param int $id Identificador de la cuenta.
+     * @param array<string, mixed> $datos Nombre, apellidos, licenciatura_id y semestre.
+     * @throws InvalidArgumentException Si los datos no cumplen los límites del registro.
+     */
+    public static function actualizarDatos(int $id, array $datos): void
+    {
+        if ($id < 1) {
+            throw new InvalidArgumentException('La cuenta indicada no es válida.');
+        }
+
+        $errores = self::erroresDatosAdministrables($datos);
+        if ($errores !== []) {
+            throw new InvalidArgumentException((string) reset($errores));
+        }
+
+        $stmt = db()->prepare(
+            "UPDATE usuarios
+                SET nombre = :nombre,
+                    apellidos = :apellidos,
+                    licenciatura_id = :licenciatura_id,
+                    semestre = :semestre
+              WHERE id = :id
+                AND rol IN ('alumno', 'asesor')"
+        );
+        $stmt->execute([
+            'nombre' => trim((string) $datos['nombre']),
+            'apellidos' => trim((string) $datos['apellidos']),
+            'licenciatura_id' => (int) $datos['licenciatura_id'],
+            'semestre' => (int) $datos['semestre'],
+            'id' => $id,
+        ]);
+    }
+
+    /**
+     * Activa o desactiva una cuenta de alumno o asesor sin tocar sus sesiones.
+     * La condición del UPDATE impide modificar administradores incluso si se llama directamente.
+     *
+     * @param int $id Identificador de la cuenta.
+     * @param bool $activo true para activar; false para desactivar.
+     */
+    public static function cambiarActivo(int $id, bool $activo): void
+    {
+        if ($id < 1) {
+            return;
+        }
+
+        $stmt = db()->prepare(
+            "UPDATE usuarios
+                SET activo = :activo
+              WHERE id = :id
+                AND rol IN ('alumno', 'asesor')"
+        );
+        $stmt->execute([
+            'activo' => $activo ? 1 : 0,
+            'id' => $id,
+        ]);
+    }
 }
