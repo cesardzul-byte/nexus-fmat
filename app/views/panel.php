@@ -78,5 +78,11 @@
             <p class="texto-suave">Crea, edita, desactiva y vuelve a activar las materias del catálogo.</p>
             <a class="boton boton-destacado" href="<?= e(url('admin_materias.php')) ?>">Administrar materias</a>
         </article>
+        <!-- ===== ISS-23 · Acceso a administración de usuarios (P2) ===== -->
+        <article class="tarjeta">
+            <h3 class="tarjeta-titulo">Usuarios</h3>
+            <p class="texto-suave">Consulta las cuentas registradas, corrige sus datos y administra su acceso.</p>
+            <a class="boton boton-secundario" href="<?= e(url('admin_usuarios.php')) ?>">Administrar usuarios</a>
+        </article>
     </div>
 <?php endif; ?>
