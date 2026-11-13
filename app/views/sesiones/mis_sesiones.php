@@ -86,6 +86,12 @@
                     <?php if (is_string($sesion['comentario']) && trim($sesion['comentario']) !== ''): ?>
                         <p><strong>Comentario:</strong> <?= e($sesion['comentario']) ?></p>
                     <?php endif; ?>
+                    <?php // ===== ISS-24 · Calificar una sesión completada (P1) ===== ?>
+                    <?php if ($rol === 'alumno' && $sesion['estado'] === 'completada' && $sesion['calificacion'] === null): ?>
+                        <div class="acciones">
+                            <a class="boton boton-destacado" href="<?= e(url('resena.php?sesion=' . $sesion['id'])) ?>">Calificar</a>
+                        </div>
+                    <?php endif; ?>
                 </article>
             <?php endforeach; ?>
         </div>
