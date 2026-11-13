@@ -15,8 +15,9 @@ $asesorId = (int) $usuario['id'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verificarCsrf();
     
-    $accion = $_POST['accion'] ?? '';
-    $materiaId = (int) ($_POST['materia_id'] ?? 0);
+    // textoPost() y enteroPost() descartan arreglos: materia_id[]=1 llega como 0 (ISS-25)
+    $accion = textoPost('accion');
+    $materiaId = enteroPost('materia_id');
 
     if ($accion === 'agregar') {
         $materia = Materia::buscarPorId($materiaId);
@@ -32,7 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash('exito', 'Materia agregada correctamente.');
         }
     } else if ($accion === 'quitar') {
-        if(AsesorMateria::quitar($asesorId, $materiaId)) {
+        // ISS-25: no se quita una materia con sesiones pendientes o confirmadas de hoy en adelante
+        $vivas = Sesion::contarVivasDeMateria($asesorId, $materiaId);
+
+        if ($vivas > 0) {
+            flash('error', 'No puedes quitar esta materia: tienes ' . $vivas
+                . ($vivas === 1 ? ' sesión pendiente o confirmada' : ' sesiones pendientes o confirmadas')
+                . '. Atiéndelas o cancélalas antes.');
+        } else if (AsesorMateria::quitar($asesorId, $materiaId)) {
             flash('exito', 'Quitaste la materia y sus bloques de disponibilidad.');
         } else {
             flash('error', 'Esa materia no está en tu lista.');
