@@ -90,4 +90,18 @@ class Resena
         }
         return $promedios;
     }
+
+    
+    /**
+     * Indica si una sesión ya tiene reseña, para avisar antes de mostrar el formulario.
+     *
+     * @param int $sesionId Id de la sesión.
+     * @return bool true si ya existe una reseña para esa sesión.
+     */
+    public static function existeDeSesion(int $sesionId): bool
+    {
+        $stmt = db()->prepare('SELECT 1 FROM resenas WHERE sesion_id = ?');
+        $stmt->execute([$sesionId]);
+        return $stmt->fetchColumn() !== false;
+    }
 }
