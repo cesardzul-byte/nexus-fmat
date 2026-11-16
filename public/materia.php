@@ -35,4 +35,6 @@ vista('materia', [
     'asesores' => $asesores,
     // ISS-18: decide si cada asesor muestra "Agendar" (alumno) o "Inicia sesión para agendar" (visitante)
     'usuario' => usuarioActual(),
+    // ISS-24 · Promedio del asesor 
+    'promedios' => Resena::promediosPorAsesor(),
 ]);
