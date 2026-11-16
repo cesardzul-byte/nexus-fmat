@@ -331,4 +331,45 @@ class Sesion
         $stmt->execute([$asesorId, $desde, $hasta, ...self::ESTADOS_QUE_RESERVAN]);
         return $stmt->fetchAll();
     }
+
+    
+    // ===== ISS-25 · Materias con sesiones vivas (P1) =====
+
+    /**
+     * Cuenta las sesiones vivas de un asesor en una materia: las que reservan horario
+     * (pendiente o confirmada, RN-06) con fecha de hoy en adelante.
+     *
+     * Las pasadas, completadas o canceladas no cuentan. La fecha de hoy sale de PHP
+     * (bootstrap.php fija America/Merida) y no de CURDATE(), que usa la zona del servidor de BD.
+     *
+     * @param int $asesorId Id del asesor.
+     * @param int $materiaId Id de la materia.
+     * @return int Cuántas sesiones vivas tiene; 0 si ninguna.
+     */
+    public static function contarVivasDeMateria(int $asesorId, int $materiaId): int
+    {
+        $marcadores = implode(', ', array_fill(0, count(self::ESTADOS_QUE_RESERVAN), '?'));
+        $stmt = db()->prepare(
+            "SELECT COUNT(*)
+               FROM sesiones
+              WHERE asesor_id = ?
+                AND materia_id = ?
+                AND fecha >= ?
+                AND estado IN ($marcadores)"
+        );
+        $stmt->execute([$asesorId, $materiaId, date('Y-m-d'), ...self::ESTADOS_QUE_RESERVAN]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * Indica si un asesor tiene sesiones vivas de una materia (ver contarVivasDeMateria()).
+     *
+     * @param int $asesorId Id del asesor.
+     * @param int $materiaId Id de la materia.
+     * @return bool true si tiene al menos una, false si no.
+     */
+    public static function hayVivasDeMateria(int $asesorId, int $materiaId): bool
+    {
+        return self::contarVivasDeMateria($asesorId, $materiaId) > 0;
+    }
 }
