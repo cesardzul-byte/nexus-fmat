@@ -40,7 +40,7 @@ En todas las tablas: `ENGINE=InnoDB`, `DEFAULT CHARSET=utf8mb4`. Las columnas so
 
 ### 3.1 `licenciaturas`
 
-Catálogo de carreras. Es una tabla (y no un `ENUM` en `usuarios`) porque el administrador puede agregar o editar carreras desde la aplicación (revisión 2) sin cambiar la estructura de la BD.
+Catálogo de carreras. Es una tabla (y no un `ENUM` en `usuarios`) para que agregar una carrera sea insertar una fila, sin cambiar la estructura de `usuarios`. En el MVP las carreras se cargan desde `seed.sql`; no hay pantalla para administrarlas.
 
 | Columna | Tipo | Nulo | Llave | Restricciones | Descripción |
 |---|---|---|---|---|---|
@@ -184,8 +184,8 @@ La BD no puede garantizar estas reglas con restricciones, así que se validan en
 
 | Regla | Dónde |
 |---|---|
-| `asesor_materia.asesor_id` y `sesiones.asesor_id` deben ser usuarios con rol `asesor`, y `sesiones.alumno_id` uno con rol `alumno` (un `CHECK` no puede consultar otra tabla) | ISS-11, revisión 2 |
+| `asesor_materia.asesor_id` y `sesiones.asesor_id` deben ser usuarios con rol `asesor`, y `sesiones.alumno_id` uno con rol `alumno` (un `CHECK` no puede consultar otra tabla) | ISS-11 (`mis_materias.php`) e ISS-18 (`agendar.php`) |
 | Dos bloques de disponibilidad del mismo asesor y el mismo día no se empalman (`inicio < otro_fin` y `fin > otro_inicio`); MySQL no tiene restricciones de exclusión por rangos de tiempo | ISS-12 (`seEmpalman()`) |
 | Horario entre 07:00 y 21:00 en múltiplos de 30 minutos | ISS-12 (`validarBloque()`) |
-| Una sesión cae dentro de un bloque del asesor y no se empalma con otras sesiones del asesor ni del alumno en esa fecha | Revisión 2 |
-| Solo se reseñan sesiones con estado `completada` | Revisión 2 |
+| Una sesión cae dentro de un bloque del asesor y no se empalma con otras sesiones del asesor ni del alumno en esa fecha | ISS-18 (`Sesion::agendar()` y `dentroDeBloque()`) |
+| Solo se reseñan sesiones con estado `completada` | ISS-24 (`resena.php`) |
