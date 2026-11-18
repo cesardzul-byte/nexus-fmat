@@ -11,7 +11,7 @@
 
 **Materia:** Desarrollo de Aplicaciones Web
 
-**Fecha:** 28/10/2026
+**Fecha:** 18/11/2026
 
 ---
 
@@ -46,7 +46,7 @@ El sistema no incluirá videollamadas, pagos en línea ni notificaciones por cor
 
 | Rol | Permisos |
 |---|---|
-| **Visitante** | Consultar información general del sistema.<br>Ver las materias disponibles y conocer el funcionamiento de las asesorías.<br>Registrarse para obtener una cuenta de alumno. |
+| **Visitante** | Consultar información general del sistema.<br>Ver las materias disponibles y conocer el funcionamiento de las asesorías.<br>Registrarse para obtener una cuenta de alumno o de asesor. |
 | **Alumno** | Consultar los horarios disponibles de los asesores.<br>Reservar y cancelar asesorías.<br>Consultar sus próximas sesiones y su historial de asesorías.<br>Registrar una calificación y comentarios sobre las sesiones completadas. |
 | **Asesor** | Registrar y actualizar su disponibilidad de horarios.<br>Consultar las solicitudes de asesoría recibidas.<br>Confirmar o cancelar solicitudes y gestionar las sesiones programadas.<br>Marcar como completadas las sesiones realizadas. |
 | **Administrador** | Gestionar las cuentas de alumnos y asesores.<br>Administrar las materias disponibles en el sistema.<br>Supervisar las asesorías programadas y los registros de las sesiones.<br>Consultar estadísticas sobre las materias más solicitadas y las calificaciones de las asesorías.<br>Mantener actualizada la información general de la plataforma. |
@@ -57,11 +57,11 @@ El flujo principal del sistema será: publicar disponibilidad → buscar asesor�
 
 ### Requisitos funcionales
 
-#### RF-01. Crear cuenta de alumno
+#### RF-01. Crear cuenta
 
 *Rol: Visitante | Operación: Crear | Revisión: Revisión 1*
 
-El sistema deberá permitir el registro de una cuenta de alumno con nombre, apellidos, correo institucional, contraseña, matrícula, licenciatura y semestre. El correo y la matrícula deberán ser únicos, y el correo deberá cumplir con el dominio institucional configurado. El rol de asesor o administrador será asignado por una cuenta autorizada, no por el usuario durante el registro público.
+El sistema deberá permitir el registro público de una cuenta de alumno o de asesor con nombre, apellidos, correo institucional, contraseña, matrícula, licenciatura y semestre. El correo y la matrícula deberán ser únicos, y el correo deberá cumplir con el dominio institucional configurado. El registro público nunca crea cuentas de administrador.
 
 #### RF-02. Iniciar sesión
 
@@ -83,7 +83,7 @@ El sistema deberá mostrar las materias activas que cuentan con información dis
 
 #### RF-05. Consultar la tabla de horarios
 
-*Rol: Alumno | Operación: Leer | Revisión: Revisión 1*
+*Rol: Alumno | Operación: Leer | Revisión: Revisión 2*
 
 El sistema deberá presentar una tabla semanal de lunes a sábado, con intervalos de 30 minutos entre las 07:00 y las 21:00. Los indicadores del ejemplo significan:
 
@@ -131,13 +131,13 @@ El sistema deberá permitir desactivar una materia que deje de ofrecerse, sin el
 
 *Rol: Administrador | Operación: Leer y actualizar; eliminar lógico | Revisión: Revisión 2*
 
-El sistema deberá permitir consultar perfiles, actualizar datos autorizados, asignar roles y desactivar cuentas. La desactivación conservará las sesiones y reseñas históricas relacionadas; los permisos de administrador no podrán asignarse mediante el registro público.
+El sistema deberá permitir consultar perfiles, actualizar datos autorizados y desactivar o reactivar cuentas. El rol de una cuenta no se cambia desde la aplicación. La desactivación conservará las sesiones y reseñas históricas relacionadas; los permisos de administrador no podrán asignarse mediante el registro público.
 
 #### RF-11. Buscar asesorías
 
 *Rol: Alumno | Operación: Leer | Revisión: Revisión 2*
 
-El sistema deberá permitir filtrar las opciones por materia, asesor, día y horario, mostrando únicamente bloques que puedan reservarse según las reglas de negocio.
+El sistema deberá permitir buscar asesorías por materia y asesor. La tabla semanal de cada asesor muestra el día y el horario de los bloques que pueden reservarse según las reglas de negocio.
 
 #### RF-12. Agendar asesoría
 
@@ -149,7 +149,7 @@ El sistema deberá permitir solicitar una sesión con asesor, materia, fecha, ho
 
 *Rol: Asesor | Operación: Leer y actualizar | Revisión: Revisión 2*
 
-El sistema deberá permitir que el asesor consulte sus solicitudes y cambie su estado de pendiente a confirmada o cancelada. Las solicitudes y sus cambios de estado deberán conservarse en el historial.
+El sistema deberá permitir que el asesor consulte sus solicitudes y cambie su estado de pendiente a confirmada o cancelada. El historial muestra el estado actual de cada sesión; no se guarda una bitácora de los cambios de estado.
 
 #### RF-14. Cancelar una sesión
 
@@ -179,7 +179,7 @@ El sistema deberá mostrar la demanda de asesorías, sesiones completadas y canc
 
 #### RN-01. Dominio y unicidad del correo
 
-El correo de cada cuenta deberá ser único. El registro público de alumnos aceptará únicamente el dominio definido en la constante `DOMINIO_CORREO`, cuyo valor inicial será `alumnos.uady.mx`; si cambia el dominio institucional, se modificará la constante de configuración y no varias validaciones dispersas.
+El correo de cada cuenta deberá ser único. El registro público de alumnos y asesores aceptará únicamente el dominio definido en la constante `DOMINIO_CORREO`, cuyo valor inicial será `alumnos.uady.mx`; si cambia el dominio institucional, se modificará la constante de configuración y no varias validaciones dispersas.
 
 #### RN-02. Permisos según el rol
 
@@ -245,7 +245,7 @@ El sistema deberá regenerar el identificador de sesión después de autenticar 
 
 #### RNF-06. Dominio institucional configurable
 
-La validación del correo de alumnos utilizará la constante `DOMINIO_CORREO`, inicialmente `alumnos.uady.mx`, centralizando el cambio si la institución establece otro dominio.
+La validación del correo en el registro público (alumnos y asesores) utilizará la constante `DOMINIO_CORREO`, inicialmente `alumnos.uady.mx`, centralizando el cambio si la institución establece otro dominio.
 
 #### RNF-07. Compatibilidad con navegadores
 
