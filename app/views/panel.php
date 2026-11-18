@@ -22,6 +22,12 @@
             <p class="texto-suave">Revisa qué asesores dan la materia que necesitas y sus horarios.</p>
             <a class="boton boton-destacado" href="<?= e(url()) ?>">Buscar materia</a>
         </article>
+        <!-- ===== ISS-19 · Acceso a mis sesiones (P2) ===== -->
+        <article class="tarjeta">
+            <h2 class="tarjeta-titulo">Mis sesiones</h2>
+            <p class="texto-suave">Consulta tus próximas asesorías y revisa tu historial.</p>
+            <a class="boton boton-secundario" href="<?= e(url('mis_sesiones.php')) ?>">Ver mis sesiones</a>
+        </article>
     </div>
 
 <?php elseif ($usuario['rol'] === 'asesor'): ?>
@@ -35,6 +41,12 @@
             <h2 class="tarjeta-titulo">Mi disponibilidad</h2>
             <p class="texto-suave">Publica los días y horas en que puedes dar asesoría.</p>
             <a class="boton boton-destacado" href="<?= e(url('disponibilidad.php')) ?>">Ver mi disponibilidad</a>
+        </article>
+        <!-- ===== ISS-19 · Acceso a solicitudes y sesiones (P2) ===== -->
+        <article class="tarjeta">
+            <h2 class="tarjeta-titulo">Solicitudes y sesiones</h2>
+            <p class="texto-suave">Confirma solicitudes, administra tus asesorías y consulta el historial.</p>
+            <a class="boton boton-secundario" href="<?= e(url('mis_sesiones.php')) ?>">Ver solicitudes y sesiones</a>
         </article>
     </div>
 
@@ -56,6 +68,21 @@
         <article class="tarjeta tarjeta-estadistica">
             <p class="estadistica-numero"><?= e($totalMaterias) ?></p>
             <p class="estadistica-etiqueta">Materias activas</p>
+        </article>
+    </div>
+
+    <h2 class="titulo-administracion">Administración</h2>
+    <div class="rejilla-tarjetas">
+        <article class="tarjeta">
+            <h3 class="tarjeta-titulo">Materias</h3>
+            <p class="texto-suave">Crea, edita, desactiva y vuelve a activar las materias del catálogo.</p>
+            <a class="boton boton-destacado" href="<?= e(url('admin_materias.php')) ?>">Administrar materias</a>
+        </article>
+        <!-- ===== ISS-23 · Acceso a administración de usuarios (P2) ===== -->
+        <article class="tarjeta">
+            <h3 class="tarjeta-titulo">Usuarios</h3>
+            <p class="texto-suave">Consulta las cuentas registradas, corrige sus datos y administra su acceso.</p>
+            <a class="boton boton-secundario" href="<?= e(url('admin_usuarios.php')) ?>">Administrar usuarios</a>
         </article>
     </div>
 <?php endif; ?>

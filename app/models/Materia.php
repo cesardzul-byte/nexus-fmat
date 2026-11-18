@@ -132,4 +132,97 @@ class Materia
 
         return array_values($asesores);
     }
+
+    // ===== ISS-22 · Administración de materias (P3) =====
+
+    /**
+     * Devuelve todas las materias, activas e inactivas, ordenadas por nombre.
+     * La usa solo la administración: el resto del sitio usa activas().
+     *
+     * @return array<int, array<string, mixed>> Materias con su id, clave, nombre y activa.
+     */
+    public static function todas(): array
+    {
+        $stmt = db()->query(
+            'SELECT id, clave, nombre, activa
+               FROM materias
+              ORDER BY nombre'
+        );
+
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Dice si ya hay otra materia con esa clave. Al editar se pasa el id de la
+     * materia para que no choque consigo misma.
+     *
+     * @param string $clave Clave a revisar.
+     * @param int $excluirId Id de la materia que se edita; 0 al crear una nueva.
+     * @return bool true si la clave ya la usa otra materia.
+     */
+    public static function existeClave(string $clave, int $excluirId = 0): bool
+    {
+        $stmt = db()->prepare(
+            'SELECT 1
+               FROM materias
+              WHERE clave = ?
+                AND id <> ?'
+        );
+        $stmt->execute([$clave, $excluirId]);
+
+        return $stmt->fetchColumn() !== false;
+    }
+
+    /**
+     * Crea una materia nueva, activa.
+     *
+     * @param string $clave Clave única, ya validada.
+     * @param string $nombre Nombre, ya validado.
+     * @return int Id de la materia creada.
+     */
+    public static function crear(string $clave, string $nombre): int
+    {
+        $stmt = db()->prepare(
+            'INSERT INTO materias (clave, nombre, activa)
+             VALUES (?, ?, 1)'
+        );
+        $stmt->execute([$clave, $nombre]);
+
+        return (int) db()->lastInsertId();
+    }
+
+    /**
+     * Cambia la clave y el nombre de una materia. Las sesiones y bloques que la usan
+     * guardan su id, así que muestran el nombre nuevo sin cambiar nada más.
+     *
+     * @param int $id Id de la materia.
+     * @param string $clave Clave única, ya validada.
+     * @param string $nombre Nombre, ya validado.
+     */
+    public static function actualizar(int $id, string $clave, string $nombre): void
+    {
+        $stmt = db()->prepare(
+            'UPDATE materias
+                SET clave = ?, nombre = ?
+              WHERE id = ?'
+        );
+        $stmt->execute([$clave, $nombre, $id]);
+    }
+
+    /**
+     * Activa o desactiva una materia. Nunca se borra (RN-10): al desactivarla sus
+     * asesores, bloques y sesiones se conservan, y regresan si se vuelve a activar.
+     *
+     * @param int $id Id de la materia.
+     * @param bool $activa true para activarla, false para desactivarla.
+     */
+    public static function cambiarActiva(int $id, bool $activa): void
+    {
+        $stmt = db()->prepare(
+            'UPDATE materias
+                SET activa = ?
+              WHERE id = ?'
+        );
+        $stmt->execute([$activa ? 1 : 0, $id]);
+    }
 }

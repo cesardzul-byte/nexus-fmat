@@ -9,8 +9,11 @@ declare(strict_types=1);
 class AsesorMateria
 {
     /**
-     * Devuelve las materias que imparte un asesor, ordenadas por nombre. 
-     * 
+     * Devuelve las materias activas que imparte un asesor, ordenadas por nombre.
+     *
+     * Las que el administrador desactivó no salen (ISS-25): así no aparecen en
+     * "Mis materias" ni en el formulario de "Mi disponibilidad".
+     *
      * @param int $asesorId Id del asesor.
      * @return array<int, array<string, mixed>> Materias con su id, clave y nombre.
      */
@@ -21,25 +24,31 @@ class AsesorMateria
                FROM asesor_materia am
                JOIN materias m ON m.id=am.materia_id
               WHERE am.asesor_id = ?
+                AND m.activa = 1
               ORDER BY m.nombre'
         );
         $stmt->execute([$asesorId]);
         return $stmt->fetchAll();
     }
 
-    /**
-     * Indica si un asesor ya imparte una materia.
-     * 
+   /**
+     * Indica si un asesor imparte una materia que sigue activa.
+     *
+     * Una materia desactivada cuenta como no impartida (ISS-25): así disponibilidad.php
+     * rechaza un bloque de esa materia aunque se envíe editando el HTML.
+     *
      * @param int $asesorId Id del asesor.
      * @param int $materiaId Id de la materia.
-     * @return bool true si el asesor ya imparte la materia, false si no.
+     * @return bool true si el asesor imparte la materia y está activa, false si no.
      */
     public static function imparte(int $asesorId, int $materiaId): bool
     {
         $stmt = db()->prepare(
             'SELECT 1
-               FROM asesor_materia
-              WHERE asesor_id = ? AND materia_id = ?'
+               FROM asesor_materia am
+               JOIN materias m ON m.id = am.materia_id
+              WHERE am.asesor_id = ? AND am.materia_id = ?
+                AND m.activa = 1'
         );
         $stmt->execute([$asesorId, $materiaId]);
         return (bool) $stmt->fetchColumn();

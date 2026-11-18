@@ -6,6 +6,8 @@
  * - $materia (array): id, clave y nombre de la materia.
  * - $asesores (array): asesores con nombre, apellidos, licenciatura y bloques;
  *   cada bloque ya trae 'dia', 'horario' y 'lugar' listos para mostrar.
+ * - $usuario (array|null): usuario en sesión, o null si es un visitante (ISS-18).
+ * - $promedios (array): promedio y total de reseñas por asesor_id; sin llave si no tiene reseñas (ISS-24).
  */
 ?>
 <p><a class="enlace-volver" href="<?= e(url()) ?>">← Todas las materias</a></p>
@@ -27,6 +29,18 @@
                 <h2 class="tarjeta-titulo"><?= e($asesor['nombre'] . ' ' . $asesor['apellidos']) ?></h2>
                 <p class="texto-suave"><?= e($asesor['licenciatura'] ?? 'Licenciatura no registrada') ?></p>
 
+                
+                <?php // ===== ISS-24 · Promedio del asesor (P1) ===== ?>
+                <?php $resumen = $promedios[(int) $asesor['id']] ?? null; ?>
+                <?php if ($resumen === null): ?>
+                    <p class="calificacion">Sin reseñas</p>
+                <?php else: ?>
+                    <p class="calificacion">
+                        <span class="calificacion-estrella" aria-hidden="true">★</span>
+                        <span class="calificacion-promedio"><?= e(number_format($resumen['promedio'], 1)) ?></span>
+                        · <?= e($resumen['total']) ?> <?= e($resumen['total'] === 1 ? 'reseña' : 'reseñas') ?>
+                    </p>
+                <?php endif; ?>
                 <?php if ($asesor['bloques'] === []): ?>
                     <p class="texto-suave">Aún no publica horarios para esta materia.</p>
                 <?php else: ?>
@@ -51,6 +65,13 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <?php /* ISS-18: solo el alumno agenda; asesores y administradores no ven botón */ ?>
+                    <?php if ($usuario === null): ?>
+                        <a class="boton boton-secundario" href="<?= e(url('login.php')) ?>">Inicia sesión para agendar</a>
+                    <?php elseif ($usuario['rol'] === 'alumno'): ?>
+                        <a class="boton" href="<?= e(url('agendar.php?materia=' . $materia['id'] . '&asesor=' . $asesor['id'])) ?>">Agendar</a>
+                    <?php endif; ?>
                 <?php endif; ?>
             </article>
         <?php endforeach; ?>

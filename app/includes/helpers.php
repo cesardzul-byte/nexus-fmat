@@ -1,7 +1,7 @@
 <?php
 /**
  * Funciones comunes a todas las páginas: escape, rutas, redirección,
- * mensajes flash, usuario en sesión, vistas y páginas de error.
+ * mensajes flash, usuario en sesión, vistas, páginas de error, lectura del POST y respuestas JSON.
  */
 declare(strict_types=1);
 
@@ -111,5 +111,48 @@ function abortar(int $codigo, string $mensaje): never
 {
     http_response_code($codigo);
     vista('error', ['titulo' => 'Error ' . $codigo, 'codigo' => $codigo, 'mensaje' => $mensaje]);
+    exit;
+}
+
+// ===== ISS-15 · Base común de la revisión 2 (P4) =====
+
+/**
+ * Lee un campo de texto del POST. Un arreglo (HTML modificado) cuenta como vacío.
+ *
+ * @param string $campo Nombre del campo.
+ * @return string Valor sin espacios a los lados, o '' si no llegó.
+ */
+function textoPost(string $campo): string
+{
+    $valor = $_POST[$campo] ?? '';
+    return is_string($valor) ? trim($valor) : '';
+}
+
+/**
+ * Lee un campo entero del POST.
+ *
+ * @param string $campo Nombre del campo.
+ * @return int El entero, o 0 si no llegó o no es un entero válido.
+ */
+function enteroPost(string $campo): int
+{
+    return (int) filter_var($_POST[$campo] ?? null, FILTER_VALIDATE_INT);
+}
+
+/**
+ * Responde en JSON y termina la ejecución. Lo usan los endpoints de public/api/,
+ * también para los errores: fetch no debe recibir la página HTML de abortar() ni seguir
+ * la redirección al login de requiereRol().
+ *
+ * @param array<mixed> $datos Datos a enviar.
+ * @param int $codigo Código HTTP, por ejemplo 200, 400 o 401.
+ * @return never
+ */
+function responderJson(array $datos, int $codigo = 200): never
+{
+    http_response_code($codigo);
+    header('Content-Type: application/json; charset=utf-8');
+    // UNESCAPED_UNICODE deja 'sábado' legible; THROW_ON_ERROR falla en vez de mandar una respuesta vacía
+    echo json_encode($datos, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
     exit;
 }
