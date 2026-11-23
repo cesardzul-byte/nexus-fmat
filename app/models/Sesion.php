@@ -372,4 +372,75 @@ class Sesion
     {
         return self::contarVivasDeMateria($asesorId, $materiaId) > 0;
     }
+
+    
+    // ===== ISS-30 · Estadísticas de demanda RF-17 (P1) =====
+
+    /**
+     * Cuenta las solicitudes del periodo: todas (cualquier estado), las completadas y las canceladas.
+     *
+     * Las fechas son inclusivas sobre sesiones.fecha. Si una llega en null, ese extremo queda abierto;
+     * si llegan las dos en null, se cuenta todo el histórico.
+     *
+     * @param string|null $desde Primera fecha AAAA-MM-DD, o null para no poner límite inferior.
+     * @param string|null $hasta Última fecha AAAA-MM-DD, o null para no poner límite superior.
+     * @return array{solicitadas: int, completadas: int, canceladas: int} Totales del periodo; 0 si no hay sesiones.
+     */
+    public static function resumenEntre(?string $desde, ?string $hasta): array
+    {
+        // estado = '...' vale 1 o 0 en MariaDB, así que SUM() cuenta solo las filas que cumplen.
+        // COALESCE() cambia el NULL que da SUM() sin filas por 0.
+        $stmt = db()->prepare(
+            "SELECT COUNT(*) AS solicitadas,
+                    COALESCE(SUM(s.estado = 'completada'), 0) AS completadas,
+                    COALESCE(SUM(s.estado = 'cancelada'), 0) AS canceladas
+               FROM sesiones s
+              WHERE (? IS NULL OR s.fecha >= ?)
+                AND (? IS NULL OR s.fecha <= ?)"
+        );
+        $stmt->execute([$desde, $desde, $hasta, $hasta]);
+        $fila = $stmt->fetch();
+
+        return [
+            'solicitadas' => (int) $fila['solicitadas'],
+            'completadas' => (int) $fila['completadas'],
+            'canceladas' => (int) $fila['canceladas'],
+        ];
+    }
+
+    
+    /**
+     * Agrupa las solicitudes del periodo por materia, para el ranking y el desglose de RF-17.
+     *
+     * Solo aparecen materias con al menos una solicitud (activas o no, porque es historial),
+     * de más a menos solicitadas y por nombre en empate. Mismas reglas de fechas que resumenEntre().
+     *
+     * @param string|null $desde Primera fecha AAAA-MM-DD, o null para no poner límite inferior.
+     * @param string|null $hasta Última fecha AAAA-MM-DD, o null para no poner límite superior.
+     * @return array<int, array{clave: string, nombre: string, solicitadas: int}> Materias ordenadas por demanda.
+     */
+    public static function demandaPorMateria(?string $desde, ?string $hasta): array
+    {
+        // INNER JOIN parte de las sesiones: una materia sin solicitudes no tiene filas y no aparece
+        $stmt = db()->prepare(
+            'SELECT m.clave, m.nombre, COUNT(*) AS solicitadas
+               FROM sesiones s
+               INNER JOIN materias m ON m.id = s.materia_id
+              WHERE (? IS NULL OR s.fecha >= ?)
+                AND (? IS NULL OR s.fecha <= ?)
+              GROUP BY m.id, m.clave, m.nombre
+              ORDER BY solicitadas DESC, m.nombre ASC'
+        );
+        $stmt->execute([$desde, $desde, $hasta, $hasta]);
+
+        $materias = [];
+        foreach ($stmt->fetchAll() as $fila) {
+            $materias[] = [
+                'clave' => $fila['clave'],
+                'nombre' => $fila['nombre'],
+                'solicitadas' => (int) $fila['solicitadas'],
+            ];
+        }
+        return $materias;
+    }
 }

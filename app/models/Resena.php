@@ -104,4 +104,36 @@ class Resena
         $stmt->execute([$sesionId]);
         return $stmt->fetchColumn() !== false;
     }
+
+    
+    // ===== ISS-30 · Estadísticas de demanda RF-17 (P1) =====
+
+    /**
+     * Calcula el promedio y la cantidad de reseñas de las sesiones del periodo.
+     *
+     * El filtro va sobre la fecha de la sesión (sesiones.fecha), no sobre cuándo se escribió
+     * la reseña, para que cuadre con los totales de Sesion::resumenEntre().
+     *
+     * @param string|null $desde Primera fecha AAAA-MM-DD, o null para no poner límite inferior.
+     * @param string|null $hasta Última fecha AAAA-MM-DD, o null para no poner límite superior.
+     * @return array{promedio: float|null, total: int} promedio en null si no hay reseñas.
+     */
+    public static function resumenEntre(?string $desde, ?string $hasta): array
+    {
+        // Sin filas, AVG() da NULL y COUNT() da 0: así se distingue "sin reseñas" de "promedio 0"
+        $stmt = db()->prepare(
+            'SELECT AVG(r.calificacion) AS promedio, COUNT(*) AS total
+               FROM resenas r
+               INNER JOIN sesiones s ON s.id = r.sesion_id
+              WHERE (? IS NULL OR s.fecha >= ?)
+                AND (? IS NULL OR s.fecha <= ?)'
+        );
+        $stmt->execute([$desde, $desde, $hasta, $hasta]);
+        $fila = $stmt->fetch();
+
+        return [
+            'promedio' => $fila['promedio'] === null ? null : (float) $fila['promedio'],
+            'total' => (int) $fila['total'],
+        ];
+    }
 }
