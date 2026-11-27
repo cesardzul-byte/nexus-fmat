@@ -416,7 +416,8 @@ function mostrarMaterias(seccion, materias) {
         // Un periodo sin sesiones deja una fila que lo dice, en lugar de una tabla vacía
         const fila = document.createElement('tr');
         const celda = document.createElement('td');
-        celda.colSpan = 3;
+        // Ocupa todas las columnas del encabezado, para no repetir aquí cuántas son
+        celda.colSpan = cuerpo.closest('table').tHead.rows[0].cells.length;
         celda.className = 'texto-suave';
         celda.textContent = 'No hay solicitudes en este periodo.';
         fila.append(celda);
