@@ -84,5 +84,10 @@
             <p class="texto-suave">Consulta las cuentas registradas, corrige sus datos y administra su acceso.</p>
             <a class="boton boton-secundario" href="<?= e(url('admin_usuarios.php')) ?>">Administrar usuarios</a>
         </article>
+        <article class="tarjeta">
+            <h3 class="tarjeta-titulo">Estadísticas</h3>
+            <p class="texto-suave">Revisa cuántas asesorías se piden, se completan y se cancelan, y qué materias tienen más demanda.</p>
+            <a class="boton boton-secundario" href="<?= e(url('estadisticas.php')) ?>">Ver estadísticas</a>
+        </article>
     </div>
 <?php endif; ?>
