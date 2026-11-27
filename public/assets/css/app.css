@@ -95,6 +95,8 @@
     --ancho-menu-movil: 13rem;
     --ancho-muestra-color: 7rem;
     --ancho-tabla-semanal: 40rem;
+    --ancho-barra-min: 4rem;
+    --alto-barra: 0.75rem;
     --desplazamiento-foco: 2px;
     --duracion-transicion: 120ms;
 }
@@ -908,3 +910,88 @@ a {
     color: var(--color-tinta);
 }
 
+
+/* ===== 18. ISS-32 · Estadísticas (P3) ===== */
+
+/* Filtro desde/hasta: campos uno abajo del otro en celular y en una fila desde tableta */
+.filtro-fechas {
+    max-width: none;
+}
+
+@media (min-width: 768px) {
+    .filtro-fechas {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+}
+
+.periodo-elegido {
+    margin: var(--espacio-md) 0 0;
+    font-weight: var(--peso-fuerte);
+    color: var(--color-tinta);
+}
+
+/* "Sin reseñas" es texto, no número: más chico para que quepa en la tarjeta a 360 px */
+.estadistica-vacia {
+    font-size: var(--tamano-subtitulo);
+}
+
+/* Ranking de las materias más solicitadas: lugar, nombre, cantidad y barra */
+.ranking-materias {
+    display: grid;
+    gap: var(--espacio-md);
+    max-width: var(--ancho-tabla-semanal);
+    margin: 0;
+    padding-left: var(--espacio-lg);
+    list-style: decimal;
+}
+
+.ranking-materias li::marker {
+    font-weight: var(--peso-extra);
+    color: var(--color-tinta);
+}
+
+/* display: grid le gana al atributo hidden; esto lo respeta */
+.ranking-materias[hidden] {
+    display: none;
+}
+
+/* Cada lugar sigue siendo list-item para conservar su número; sus partes van una abajo de otra */
+.ranking-materias li > span {
+    display: block;
+}
+
+.ranking-materias .barra {
+    margin-top: var(--espacio-xs);
+}
+
+.ranking-nombre {
+    font-weight: var(--peso-fuerte);
+    color: var(--color-tinta);
+}
+
+/* Barra horizontal: el riel gris es el 100 % y el relleno azul la parte de cada materia */
+.barra {
+    display: block;
+    width: 100%;
+    min-width: var(--ancho-barra-min);
+    height: var(--alto-barra);
+    overflow: hidden;
+    background-color: var(--color-neutro-fondo);
+    border-radius: var(--radio-chico);
+}
+
+.barra-relleno {
+    display: block;
+    height: 100%;
+    background-color: var(--color-primario);
+    border-radius: inherit;
+}
+
+/* Celda "Solicitadas" de la tabla: la barra y su número en la misma línea */
+.demanda {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-sm);
+}
